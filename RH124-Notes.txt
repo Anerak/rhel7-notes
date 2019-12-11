@@ -1,0 +1,3753 @@
+RH124 System Administation I
+
+lab permissions setup
+
+lab xxxx setup
+lab xxxx grade
+
+
+Survival skills
+
+#commandline
+
+#filescmd
+
+#helpinrh
+
+#editfiles
+
+#users
+
+#permissions
+
+#process
+
+#services
+
+#sshconfig
+
+#logfiles
+
+#networking
+
+#copyfilesbetweensystems
+
+#softwareinstall
+
+#filesystem
+
+#virtualize
+
+#review
+
+
+
+
+
+
+#commandline
+
+Bash Shell Syntax
+
+Bash = Bourn Shell - Bourn-Again Shell
+
+
+--------------------
+student@desktopX ~ $
+--------------------
+User - computer - $ normal user
+
+-----------------
+root@desktopX ~ #
+-----------------
+Root
+
+
+You login through a physical terminal = physical console
+RHEL - virtual console = keyboard for user input and display for output
+Graphical desktop = Ctrl Alt F1
+
+Old RHEL - graphical desktop is accessed with Ctrl Alt F5
+
+Commands are made up from different parts
+
+command -option argument
+Options has a dash in front of them
+
+There's a fourth type of input called "parameter". It's used when an option requires some input (like tar cf [resulting file name])
+
+usermod -L student
+^       ^   ^
+|       |   |
+|       |   user
+|       |
+|       lock
+|
+Modifies user information
+
+
+Pipes means OR |
+
+command [OPTION]...<filename>
+        ^       ^
+        optional|
+                multiple options can be repeated
+
+---
+man
+---
+
+---
+tty
+---
+Shows the current terminal we're using
+/dev/pts/0
+pts stands for pseudo-terminal shell
+
+Quiz
+
+Shell
+Prompt
+Command
+Option
+Argument
+Physical console
+Virtual Console - independent consoles
+Terminal - display and keyboard, standard Terminal window
+
+
+CMD from desktop
+gnome-shell
+
+You can customize the language settings & stuff related on the first boot
+After that, you can change them on Settings
+
+Top bar - menu bar / time / user logged in
+
+Window List - windows that are open
+
+Activities area - programs running. Windows, multiple workspaces.
+
+
+Ctrl + Alt + L
+Lock/log out
+
+GNOME Help
+yelp
+
+--------------
+passwd 
+---------------
+Without specify user, it works on the current user logged in
+
+
+
+date +%R
+Hours and minutes only
+
+Linux doesn't require file name extensions
+------------------------
+file </path/to/file>
+------------------------
+
+Shows the type of file.
+
+
+head = shows the first 10 lines of the file
+tail = shows the last 10 lines of the file
+
+---------------
+head|tail -n [number of lines to show] <file>
+---------------
+wc // count words in file
+---------------
+wc -l // line count only
+---------------
+wc -w // word count only
+---------------
+wc -c /etc/group /etc/hosts //character count on two files
+---------------
+
+Tab completion
+Write a part of the command and press Tab twice.
+
+--------------------
+command --<Tab><Tab>
+--------------------
+Will show all the options available for that command.
+
+
+-------
+history
+-------
+Shows all the commands you used.
+
+! - bang symbol
+-------
+!ls
+--------
+Searchs for the most recent ls usage and re-runs it with the options
+
+-------
+!26
+------
+Re-runs command 26 from history.
+
+
+Keyboard Shortcuts
+
+Ctrl + a
+Move to the beginning of the line
+Ctrl + e
+Move to the end of the line
+Ctrl + u
+Clear from the cursor to the beginning
+Ctrl + k
+Clear from the cursor to the end
+Ctrl + Left Arrow
+Jump to the beginning of the previous word
+Ctrl + Right Arrow
+Jump to the end of the next word on the command line
+Ctrl + r
+Search the history list of command for a pattern (like a RegEx)
+
+
+Quiz:
+
+Ctrl + Left Arrow     // moves to the beginning of the previous word.
+;                     // delimiter between commands
+Ctrl+k                // deletes from cursor to the end of the line
+!string               // search command on the history
+Tab                   // autocompletion
+!number               // repeats command on the specified position
+Ctrl+a                // moves cursor to the start of the line
+history               // shows all the commands you wrote and sent
+Esc + .               // completes with the last argument you used.
+
+
+
+
+
+
+
+
+#filescmd
+
+absolute vs relative paths
+
+shell expansion - affect different files with certain options
+
+/ - root directory
+
+Static directory remains unchanged unless you go and change something
+Dynamic directory changes without you doing anything
+Persistent directory stays after reboot
+Runtime directories programs puts temporary thing while running
+
+
+/usr
+binaries and libraries that support those binaries. Compiled programs and scripts.
+| /bin
+User commands
+| /sbin
+Superuser commands
+| /local
+Locally customized software. Copies of personal software to keep it separated from the rest of the system. It won't be modified.
+
+/etc
+Configuration files
+
+/run
+Process runtime goes there.
+| REHL puts all the runtime information there. It used to be /var/run and /var/lock on old REHL versions.
+
+/home
+Personal data and config files are stored there.
+
+/root
+Home of the root user. Call it "Root's home directory"
+
+/tmp
+Temporary objects goes there from programs. 10 days for /tmp, and 30 days for /var/temp. After a couple of days they're deleted.
+
+/boot
+Files needed to boot up the system.
+
+/dev
+Detects all the devices on your system and creates files to access those devices.
+
+/var
+Variable and websites and FTP content. Variable data.
+
+Filesystem Hierarchy Standard (FHS, pathname.com)
+Older directories in / now have identical contents as their counterparts located in /usr. Symlink on RHEL 7+
+
+/bin and /usr/bin
+/sbin and /usr/sbin
+/lib and /usr/lib
+/lib64 and /usr/lib64
+
+
+Quiz:
+
+/etc        // This directory contains static, persistent system configuration data-
+/           // This is the system's root directory.
+/home       // User home directories are located under this directory.
+/root       // This is the root account's home directory.
+/var        // This directory contains dynamic configuration data, such as FTP and websites.
+/usr/bin    // Regular user commands and utilities are located here.
+/usr/sbin   // System administration binaries, for root use, are here.
+/tmp        // Temporary files are stored here.
+/run        // Contains dynamic, non-persistent application runtime data.
+/usr        // Contains installed software programs and libraries.
+
+
+Absolute paths vs relative paths
+Directories may be represented starting from the left and moving to the right or starting from the top and moving down.
+
+Avoid |Space| on files name.
+
+
+Absolute:
+A system starts from the root directory and end up with file names (like a tree with branches).
+Fully qualified name (goes all the way through the path)
+They always start from the root and always give the full path names.
+If the name of the file has a space on it, you have to surround it with quotes.
+
+/var/log/messages <-absolute
+
+Relative:
+Relative to a particular directory.
+Any file inside a directory is relative to that directory (files on /home are relative to /home).
+Relative names are relative.
+
+user@server /var $ cd log/messages
+
+log/messages is relative to /var
+
+
+
+Working directory: directory where you are in.
+When you run programs, they're designed to start in a directory. They also run in a directory called environment.
+
+The path name of a file can't be more than 4095 bytes long. They're case sensitive too.
+
+FAT and NTFS are not case sensitive.
+
+-----------------
+pwd //print working directory
+-----------------
+
+ls output is relative.
+
+
+-----
+touch
+-----
+Modifies the timestamp. Also creates files if you reference one that doesn't exists. 0 bytes.
+
+Files named with a single dot at the beginning, you're telling that it'll hide from the user. It's not security related.
+
+------------
+ls -la //shows all the files in the folder. Everything.
+------------
+
+Do you want to see everything inside the working directory with ls?
+
+-----
+ls -R
+-----
+-R stands for recursive
+
+------------------------------------------
+cd - //takes you to the previous directory
+----------------------------
+cd .. //just go to my parent
+------------------------
+cd . //just go to myself
+------------------------
+
+Quiz:
+
+ls -l ~     List the current user's home directory (long format) in simplest syntax, when it is not the current location.
+cd          Return to the current user's home directory.
+pwd         Determine the absolute path name of the current location.
+cd -        Return to the most previous working directory.
+cd ../..    Move up two levels from the current location.
+ls -al      List the current location (long format) with hidden files.
+cd /bin     Move to the binaries location, from any current location.
+cd ..       Move up to the parent of the current location.
+cd bin      Move to the binaries location, from the root directory.
+
+
+
+Everything works in context to where you are.
+
+cp [file1] [file2] [file3] [dir]
+mv [file1] [file2]                  // more like a rename
+mv [file1] [file2] [file3] [dir]    // move all these files to the specified directory
+rm [file1]                          // deletes the file
+rm -f [file1] [file2] [file3]       // forces the remove of these files. No prompt.
+mkdir [dir]                         // makes a directory
+mkdir -p [parent1]/[parent2]/[dir]  // -p says if the parents don't exists, create them too.
+cp -r [dir1] [dir2]                 // copy all the content of that directory.
+cp -r [dir1] [dir2] [dir3] [dir4]   // copy all the content from dir1, dir2 and dir3 to dir4.
+mv [dir1] [dir2]                    // rename directory
+mv [dir1] [dir2] [dir3] [dir4]      // all the multiple sources will be moved to the last argument.
+rm -r [dir1]                        // deletes recursively the directory
+rm -rf [dir1] [dir2] [dir3]         // deletes recursively all these directories without asking.
+rm -ri [dir1]                       // ask for each file on the target directory if you want to delete it or not.
+rmdir                               // removes directories that are empty
+
+
+ll = ls -l
+
+Path file expansion
+Pattern expansion
+Syntax is meant to match one or more files.
+
+*               // zero or more characters
+?               // single character
+~               // home directory
+~username       // uses the home of the specified user
+~+              // current working directory (pwd)
+~-              // previous working directory
+[abc...]        // any character inside
+[!abc...]       // any character out of it
+[^abc...]       // same as before?
+[[:alpha:]]     // any alphabetic character
+[[:lower:]]     // lowercase
+[[:upper:]]     // uppercase
+[[:alnum:]]     // alphabetic or numeric
+[[:punct:]]     // any printable character not a space or alphanumeric !?.
+[[:digit:]]     // any number 0-9
+[[:space:]]     // any whitespace (tab, newline, carriage returns)
+file{1..3}.txt  // looks for any file which name is file1.txt/file2.txt/file3.txt (remember the foor loop for touch?)
+      ^^
+      Double dots means a range of numerics or characters.
+
+
+If we put an asterisk after a letter, we ask for any names that have an A and something after it
+
+a* = anything with and 'a' and something after it
+able alfa
+
+*a* = anything that contents an 'a'
+able alfa baker braco cast charlie delta easy
+
+[ac]* = anything with the letter 'a' or 'c'
+
+???? = any name with four digits.
+able alfa cast easy echo
+
+????? = any name with five digits.
+baker bravo delta
+
+~ = home reference
+
+cd ~/glob = moves to /home/glob
+
+echo file{1..3}.txt
+file1.txt file2.txt file3.txt
+
+echo file{a..c}.txt
+filea.txt fileb.txt filec.txt
+
+echo file{a,b}{1,2}.txt
+filea1.txt filea2.txt fileb1.txt fileb2.txt
+
+echo file{a{1,2},b,c}.txt
+filea1.txt filea2.txt fileb.txt filec.txt
+
+
+Command substitution
+Allows the output to replace the command
+It's syntax that it's run or executed and replace something else, hence substitution.
+You can use `ticks` or $(subshell)
+
+echo Today is `date +%A`.
+Today is Wednesday
+
+echo The time is $(date +%M) minutes past $(date +%1%p)
+The time is 26 minutes past 11AM.
+
+What if we need to protect characters? Escape them
+Surround it with double quotes "**********hostname************"
+"$(this stilll happens inside double quotes)"
+
+You can also put a back slash \ in front of a character that you want to print.
+\$USER
+
+"Using double quotes, $host and $(hostname -s) will output this"
+Using double quotes desktopX and desktopX will output this
+
+'Using single quotes, $host and $(hostname -s) will output this'
+Using single quotes, $host and $(hostname -s) will output this
+
+Quiz:
+
+b*              Only filenames beginning with "b"
+*b              Only filenames ending in "b"
+*b*             Only filenames containing a "b"
+[!b]*           Only filenames where first character is not "b"
+???*            Only filenames at least 3 characters in length
+*[[digit]]*     Only filenames that contain a number
+[[:upper:]]*    Only filenames that begin with an upper-case letter
+
+
+touch tv_season{1,2}_episode{1..6}.ogg
+
+touch mystery_chapter{1..8}.odf
+
+mkdir ./Videos/season{1,2}
+
+mv tv_season1_episode{1..6}.ogg ./Videos/season1; mv tv_season2_episode{1..6}.ogg ./Videos/season2
+Philip way: mv tv_season1* Videos/season1; mv tv_season2* Videos/season2
+
+mkdir -p ./Documents/my_bestseller/chapters
+
+mkdir ./Documents/my_bestseller/{editor,plot_change,vacation}
+
+cd ./Documents/my_bestseller/chapters
+
+mv ~/mystery_chapter* .
+
+mv ./mystery_chapter{1,2}* ../editor
+
+mv ./mystery_chapter7.odf ./mystery_chapter8.odf ../vacation
+
+cd ~/Videos/season2
+
+cp ./tv_season2_episode1.ogg ~/Documents/my_bestseller/vacation
+
+cd Esc + . (should go to ~/Documents/my_bestseller/vacation)
+
+cd -; cp ./tv_season2_episode2.ogg ~/Documents/my_bestseller/vacation
+
+cd ../; cp ./chapters/mystery_chapter{5,6}* ./plot_change
+Philip way: cp chapters/mystery_chapter[56].odf plot_change
+
+Just as I thought, copy with a new name and embed command on it
+Philip did it for me :shrug:
+cp mystery_chapter5.odf mystery_chapter5_$(date +%F).odf
+cp mystery_chapter5.odf mystery_chapter5_$(date +%s).odf
+cp mystery_chapter5.odf mystery_chapter5_$USER.odf
+Repeat for mystery_chapter6.odf too.
+
+cd ../plot_change; rm ./*
+cd ..; rmdir ./plot_change
+rm -r ./vacation
+
+cd
+
+
+
+#helpinrh
+
+man will be our best friend.
+
+pinfo will help
+
+Red Hat Package Manager includes documentation.
+
+redhat-support-tool, online support tool.
+
+
+
+Reading documentation using man command.
+
+Man = manual pages
+
+Linux manual
+Section     Content type
+   1        User commands (both executable and shell programs)
+   2        System calls (kernel routines invoked from user space)
+   3        Library functions (provided by program libraries)
+   4        Special files (such as device files)
+   5        File formats (such as device files)
+   6        Games (historical section for amusing programs)
+   7        Conventions, standards and miscellaneous (protocols, file systems)
+   8        System administration and privileged commands (maintenance tasks)
+   9        Linux kernel API (internal kernel calls)
+
+What if you want to read about the different topics?
+------------
+man -a intro
+------------
+
+Can't remember the topic?
+-------------
+man [command]
+-------------
+
+Alright, what if you already know the topic?
+
+----------------------------
+man [topic number] [command]
+----------------------------
+
+
+special file = device file
+
+Navigating man pages
+
+Spacebar    Scroll forward (down) one screen
+PageDown    Same as above
+PageUp      Scroll backward (up) one screen
+DownArrow   Scroll forward (down) one line
+UpArrow     Scroll backward (up) one line
+d           Scroll forward (down) one half-screen
+u           Scroll backward (up) one half-screen
+/string     Search forward (down) for string in the man page
+n           Repeat previous search forward (down) in the man page
+N           Repeat previous search backward (up) in the man page
+g           Go to the start of the man page
+G           Go to the end of the man page
+q           Exit man and return to the command shell prompt
+
+RegEx are allowed for /string
+
+--------------------
+man -k [description]
+--------------------
+This will search for commands that has a related one-line description
+
+The process responsible of the man database is mandb, which runs nightly by default and must be run as root.
+If you don't get any results from man, use mandb once.
+
+-------------
+man -K [text]
+-------------
+This will look for text on all the man pages, not just the description.
+
+
+
+Guided quiz:
+
+gedit <filename>
+gedit <filename> +      // this will put the cursor at the end of the line.
+
+su                      // logs as root.
+su -                    // starts the shell as login shell with an environment similar to a real login.
+passwd -l|-u            // -l for lock, -u for unlock account.
+Protect your password, choose a hard-to-guess password.
+man 5 passwd            // UID
+man -k zip              // zipinfo
+man -k boot param       // bootparam
+man -k tune ext4        // tune2fs
+
+Some programs with a 2 in their names were made back when ext2 was the default choosen filesystem.
+They'd been updated but their names remain as 2 (tune2fs)
+
+pinfo command
+
+pinfo shows documentation that uses the GNU info structure.
+
+pinfo was made for more explicative documentation.
+
+---------------
+pinfo [command]
+---------------
+
+You made use of arrow keys to navigate through the documentation and links inside of it.
+
+n = go to the next chapter of the documention that you're reading.
+p = go to the previous chapter of the documentation that you're reading.
+u = go up one level.
+
+pinfo main page is called directory page.
+
+d = for directory
+t = for top
+q = quit
+
+Dude, another way to read documentation?
+
+Yeeeeep.
+
+/usr/share/documentation
+Documentation that comes with RPM
+"RPM Documentation"
+
+There could be PDFs, text files or any other files that the developer wanted to include on it.
+
+When you install an RPM package, puts all it's files on the place they go
+Then the system will take the package name and create that as a subdirectory on /usr/share/doc
+
+-----------
+less [file]
+-----------
+Shows the content of a file.
+
+
+-----------------------------
+firefox file:///usr/share/doc
+-----------------------------
+Duuuuuude...That's the file syntax, it explains a lot!
+
+cd /usr/share/doc
+less vim<Tab><Tab>/README.txt
+less yum-3*/README            // http://yum.baseurl.org/wiki
+less bc-*/Examples            // ckbook.b, pi.b, primes.b, twins.b
+firefox grub2*/grub.html
+yum list *-doc*               // this will show up any package available to install that provides documentation.
+
+
+
+
+Getting help from Red Hat
+
+Red Hat Customer Portal https://access.redhat.com provides customers with access to everything provided with their subscription.
+
+You can find solutions, articles, documentation (HTML or PDF) and videos.
+
+On previous RHEL versions, you would go to that website to ask for help.
+
+Now you can do it from the production machine.
+-------------------
+redhat-support-tool
+-------------------
+It will ask what you wanna do, first you have to use your username and password to login on Red Hat Customer Portal.
+The username and password will be stored at ~/.redhat-support-tool/redhat-support-tool.conf
+If you have to share it with many users, the --global option can save the account information globally on
+/etc/redhat-support-tool
+
+--------------------------------------
+: search [title of the article / text]
+--------------------------------------
+This will search the article related to what you wrote.
+The program comes with results, where you can press the number to select which one you want to read
+Each result has a Knowledge ID.
+
+If you already know the ID of the article you want to read, just write
+-------------------------------------------------
+redhat-support-tool kb [ID of the article] | less
+-------------------------------------------------
+
+You can quit with q
+
+The subscription benefits you with support from Red Hat. Depending the system's subscription support level, Red Hat may be contacted through on-line tools or by phone (https://access.redhat.com/site/support/policy/support_process)
+
+!!!!Preparing a bug report!!!!
+
+Define the problem: be clear with the problem and it's symptoms. Be specific. Details for reproduce the problem.
+
+Gather background information: Which product and version is affected? Be ready to provide relevant diagnostic information.
+You can include output of |sosreport|. For kernel problems, |kdump| crash dump or a digital photo of the kernel backtrace displayed on the monitor of a crashed system.
+
+Determine the severity level:
+Urgent (1): your production is stopped by this problem.
+High (2): you're still working but it's very important for you
+Medium (3): not critical, not stopping your production but still less than a casual request.
+Low (4): general question, not affecting production but you would like to know how something works or to report a problem or a documentation error.
+
+-------------------------------------------------------------
+redhat-support-tool
+opencase --product="Red Hat Enterprise Linux" --version="7.0"
+-------------------------------------------------------------
+This will open a new support case.
+After declaring the problem and symptoms, choosing the severity of the error...
+You can search if there's a solution already before submitting the problem.
+If you submit the case, an ID will be assigned to your problem.
+
+Also, you can attach information, like a sosreport.
+
+sosreport gathers a number of config files and zip them into a tar archive.
+It will be uploaded to the support case so the engineers can see how your system is configured so they won't have to ask you.
+
+
+You can list cases with |listcases| and select a case for multiple options.
+
+Want to close a case? Just use
+---------------------------------------------------
+redhat-support-tool modifycase --status=Closed [kb]
+---------------------------------------------------
+
+Let's generate a sosreport
+
+
+---------
+sosreport
+---------
+Yeah, that's it!
+
+The output file will be found at /var/tmp
+
+We can unpack it using
+
+-------------------------
+tar -xvJf sosreport-*.tar
+-------------------------
+
+
+PostScript
+man -t passwd > passwd.gs
+man -k postscript viewer
+evince -i,--page-index=NUMBER
+lp passwd.gs -P 2,3
+pinfo evince
+
+
+#editfiles
+
+Redirecting output to a File or Program
+
+Standard input - default connection = keyboard / read only
+Channel 0
+
+
+Standard output - default connection = terminal / write only
+Channel 1
+
+Standard error  - default connection = terminal / write only
+Channel 2
+
+
+Channels 3 or more are meant for programmers. They can be input or output, depending on the need
+
+
+----------------------------------------
+0---1 ->/dev/tty1 | change it for a file to replace the terminal  command > file
+  \
+  _\|
+    2 ->/dev/tty1
+----------------------------------------
+command [channel]> file
+-----------------------
+Without specifying the channel, it redirects to 1 by default.
+
+--------------------
+command < <filename>
+--------------------
+Uses the file as stdin
+
+---------------
+command >> file
+---------------
+Outputs to file and appends to the last line of it.
+
+-------------------
+command 2>/dev/null
+-------------------
+Make the output disappear
+
+
+/dev/null doesn't exists, it means everything is thrown away.
+
+There's a technical difficulty to redirect two channels to the same file.
+So, according to Philip, we'll use a slight syntax trick to get it done.
+
+------------------
+command &>file
+Alternative: command > file 2 > &1
+------------------
+Ampersand greater than means both channels are redirected.
+What it really does is redirect stderr to stdout, printing everything as if it were stdout.     
+
+--------------------------------------------------
+cat file1 file2 file3 file4 > /tmp/all-four-in-one
+--------------------------------------------------
+cat command will concatenate files.
+
+-------------------------------------------------------------
+diff previous-file current-file >> /tmp/tracking-changes-made
+-------------------------------------------------------------
+diff command will tell us the difference between the files specified.
+
+---------------------------------------------------
+find /etc -name passwd > /tmp/output 2> /tmp/errors
+---------------------------------------------------
+Redirect output to file and errors to somewhere else
+
+
+Piping
+This means take an output and redirect it to a process.
+
+-------------------
+0--->1-pipe-0--->1
+  \          \
+  _\|        _\|
+    2          2
+---------------------
+ls -l /usr/bin | less
+---------------------
+
+Tee command with pipeline
+------------------
+0--->1-tee-0--->1
+  \     |   \
+  _\|   |   _\|
+    2  \|/    2
+        V
+      Output file
+------------------------------------
+ls -l | tee /tmp/saved-output | less
+------------------------------------
+This will save the output of the first command (ls -l) and then show it on less.
+
+----------------------------------------------------
+ls -t | head -n 10 | tee /tmp/ten-last-changed-files
+----------------------------------------------------
+Look for recently changed files, get the 10 first and save it.
+
+Quiz:
+
+2>/dev/null       Display command output to terminal, ignore all errors.
+>file 2>file2     Send command output to file; errors to different file.
+&>file            Send output and errors to the same new empty file.
+>>file 2>&1       Send output and errors to the same file, but preserve existing file content.
+&>/dev/null       Run a command, but throw away all possible terminal displays.
+| tee file        Send command output to both the screen and a file at the same time.
+>file 2>/dev/null Run command, save output in a file, discard error messages.
+
+Editing files from the Shell Prompt.
+We'll be using vi editor (Vim)
+
+When you first open Vim, you'll be on command mode.
+Command mode = moving through the document, performing functions.
+Insert mode = (i) to enter. All text types becomes file content. Inserts text before the cursor.
+Append mode = (A) to enter. Appends text after the line.
+Visual mode = (v) to enter and exit. Multiple characters may be selected for text manipulation. Use V for multi-line and Ctrl+v for block selection.
+
+How to exit vim?
+Press Esc and write :q
+
+
+u = undo
+U = reset the line to the original state
+Ctrl + R = undo the undo's type / Redo
+x = delete
+w = save
+wq = save and quit
+q! = quit and discard changes
+
+yank & put = copy & paste
+Vi will save it on memory, not OS-clipboard.
+y = yank
+p = put
+
+
+vimtutor helps to get used to keystrokes and that stuff.
+
+You can move with
+  ^K 
+<H  L>
+  vJ
+if the keyboard doesn't have arrow keys for some reason.
+
+Deletion consists on the letter  d  and the motion (w/e/$)
+
+dw = delete word. Cursor at the beginning of the word.
+d$ = deletes to the end of the line. Cursor where  you want to start deleting (like Ctrl + k on Shell)
+de = deletes to the end of the current word, including the last character.
+
+
+Using count for motion will repeat that motion
+
+2u = 2 undo
+2w = move the cursor two words forward
+3e = move the cursor to the end of the third word forward.
+0 = move the cursor to the start of the line.
+
+You can combine  d  with count + motion
+d[count][motion]
+
+d2w = delete two words
+
+dd = delete whole line
+
+[count]dd = delete X amount of lines
+
+rx = replace the character at the cursor with  x (  x  is the key you press after  r  ).
+
+ce = move the cursor on the line where the correction starts. After pressing  ce  , write the correct part of the word.
+
+The  c  (change operator) works as the  d
+c[count][motion]
+c2w
+
+Ctrl + g = show your location in the file and the file status.
+G = move to the next line
+[number of line]G = move you to that line.
+
+/[string] = search the string in the document.
+
+
+
+gedit
+
+Ctrl + n = new document
+Ctrl + s = save
+Ctrl + o = open existing file
+
+If you select text on a file and move to another file (on gedit), middle click will paste the selected text.
+
+When you open a program that have a GUI, you can add & (ampersand) to the end of the command to unlink that tty to the program.
+
+--------------------
+mail -s "subject" [user to send mail]
+--------------------
+
+
+
+
+#users
+
+What is a user?
+Every process on the system runs as a particular user.
+Every user has an ID.
+Files are owned by groups.
+
+----------
+ps au
+----------
+Shows process and their users.
+
+The command  id  can show a string that contains:
+
+-------------------------------------------------------------------------------------------------------
+username:password:UID:GID:GECOS:/home/dir:shell
+^         ^       ^   ^   ^       ^       ^
+Username  |       |   |   |       |   Program that provides the user's command line prompt.
+          |       |   |   |    Location of user's /home
+          |       |   | Arbitrary text (usually contains user's real name)    
+          |       | User's primary group ID
+          |   User ID, number that identifies the user at the most fundamental level         
+Where, historically, passwords were kept in an encrypted format. Nowadays they're stored on /etc/shadow
+-------------------------------------------------------------------------------------------------------
+
+Groups
+
+It's a simpler organization structure.
+Primary groups and secondary groups.
+
+The primary group is the one documented on /etc/passwd
+Normally, it's created with the same name as the user that was recently created.
+The user is the only member of this group (User Private Group).
+
+Secondary/supplementary groups:
+Any secondary groups will be shown on /etc/group
+
+Quiz:
+
+UID               A number that identifies the user at the most fundamental level
+login shell       The program that provides the user's command line prompt
+/etc/group        Location of local group information
+home directory    Location of the user's personal files
+GID              A number that identifies the group at the most fundamental level
+/etc/passwd       Location of local user account information
+primary group     The fourth field of /etc/passwd
+
+
+All operating systems has the concept of superuser.
+It's a user that has all the power and can do everything.
+Root can override everything.
+It's good to switch to a normal user.
+
+The best thing for production is force the user to use a regular account.
+
+Switching users with the   su   command.
+Not just root by any other user.
+If you don't specify the user, you'll switch to root automatically.
+-----------
+su [user]
+-----------
+Switch tokens
+Token = when you log in, we pick up your user ID and your group ID and we mark that on the process
+If we use a dash, we're switching and login as that user
+-----------
+su - [user]
+-----------
+You can also switch to root, giving you the root token and environment.
+
+Everytime you run  su  , you're creating a new shell.
+
+Basically,  su [user]  only changes the token for the process.
+su - [user]  log us into that user (token and environment).
+
+Root doesn't need the password of others users to switch to them.
+
+Here we go with SUDO
+
+HEY! You're not on the sudoers file!
+Alright, just add me on /etc/sudoers, where you can manage policies and permissions
+
+There's a special group called  wheel  and the idea is that any user that's going to be running root commands can be made a member of the wheel group.
+The origin of  wheel  is that everybody who will be using root commands, had to be on that group.
+
+Someone made use of the sudo command, where can I get the log?
+/var/log/secure
+
+Managing local users
+
+The command used is  useradd
+
+--------------
+useradd --help
+--------------
+will show help about it.
+
+If you don't specify something when creating a new user, those values will be default values.
+Those default values can be found at /etc/login.defs
+
+You can choose stuff for the new user like:
+---------------------------------------------------------------------------------------------------
+-c, --comment COMMENT // add a value, such as a full name, to the GECOS field.
+-g, --gid GROUP       // specify the primary group of the user
+-G, --groups GROUPS   // add supplementary groups to that user account
+-d, --home HOME_DIR   // specify the user's home directory
+-m, --move-home       // move the user's home directory to a new location, needs to be used with -d
+-s, --shell SHELL     // specify a new login shell for the user
+-L, --lock            // lock the user's account
+-U, --unlock          // unlock the user's account.
+---------------------------------------------------------------------------------------------------
+usermod  allows you to change stuff like that too.
+--------------------------------------------------
+The user you created needs a password, remember to use
+-------------
+passwd [user]
+--------------
+userdel [user]
+--------------
+Delete user account, removing it from /etc/passwd but leaving the home directory intact by default.
+If you want to also delete the home directory, use
+-----------------
+userdel -r [user]
+-----------------
+
+Alright, keep in mind this:
+You added a user and got the ID 1001, ok...Then you removed that user...ok?
+When you add another user with the same ID than before, the remaining files from the first user, will be "transfered" to the new one using the same ID.
+
+Find unowned files?
+--------------------------------------
+find / -nouser -o -nogrup 2> /dev/null
+--------------------------------------
+
+
+Users ID that are used to create accounts has a range.
+--------------------------------------------------------------------------------------------------------------------------
+0         is always asigned to root.
+1-200     range of "system users", assigned statically to system processes by Red Hat.
+201-999   range of "system users" used by system processes that do not own files on the file system. Dynamically assigned.
+1000+     range available for assignment to regular users.
+--------------------------------------------------------------------------------------------------------------------------
+Prior to RHEL 7, the convention wasa that UID 1-499 was used for system users and UID 500+ for regular users.
+Default ranges used by useradd and groupadd can be changed in the /etc/login.defs file.
+
+
+
+Managing the supplementary groups.
+----------------------------------
+sudo groupadd -g [GID] [groupname]
+----------------------------------
+-g option lets you choose the number for the GID
+The automatic creation of user private groups gives an GID 1000+, it's recommended to start a little bit more high to prevent collision with the system groups (0-999)
+
+Creating a group with the -r option, it will create a system group.
+----------------------------
+sudo groupadd -r [groupname]
+---------------------------------
+sudo groupmod -n javaapp appusers
+---------------------------------
+Modify group, the  -n  is for change the name of the group.
+The  -g  is for specify a new GID
+----------------------------
+sudo groupmod -g [GID] ateam
+----------------------------
+sudo groupdel javaapp
+---------------------
+Remove a group but won't do it if it's the primary group of a user.
+
+
+Alright, now we want to ADD a group for X user...
+-------------------------------
+sudo usermod -aG [group] [user]
+-------------------------------
+Why the -aG  thing?
+         ^^
+         ||
+         |Group
+         Append
+Without the   a  , we're overwriting the primary group
+------------------------------
+sudo usermod -g [group] [user]
+------------------------------
+
+Hey, made a mistake and you added an user to a group it shouldn't be in...
+Totally understandable, dude.
+-------------------------
+gpasswd -d [user] [group]
+-------------------------
+
+Originally, passwords were stored in /etc/passwd (second field).
+Because of reasons, they moved the passwords to /etc/shadow
+
+Passwords are stored as a hash.
+$[hash-algorithm]$[salt]$[encrypted hash]
+----------------------------------
+$1$gCjLa2/Z$6Pu0EK0AzfCjxjv2hoLOB/
+^ ^        ^
+| |        Encrypted hash
+| Salt
+1 = MD5 / 6 = SHA-512
+----------------------------------
+Keep in mind, you can't de-hash something.
+Otherwise, there won't be any secure system in the world :shrug:
+RHEL 6 y 7 introduced SHA-256 ($5) y SHA-512 ($6). Both must be specified with:
+-----------------------------------
+# authconfig --passalgo [algorithm]
+-----------------------------------
+
+/etc/shadow format
+name:password:lastchange:minage:maxage:warning:inactive:expire:blank
+^     ^       ^           ^     ^       ^       ^       ^       ^
+|     |       |           |     |       |       |       |   Reserved for future use.
+|     |       |           |     |       |       |  Account expiration day (number of days since 1970/01/01).
+|     |       |           |     |       |  Number of days an account remains active after a password has expired.
+|     |       |           |     |  Warning period that a password is about to expire.
+|     |       |           |  Maximum number of days before a password must be changed.
+|     |       |  Minimum number of days before a password must be changed.
+|     |  Date of the last password change (since 1970/01/01).
+|   Encrypted password. If this field starts with a ! (exclamation mark), then it's locked.
+Login name.
+
+Why a minimum age? Some people likes to change the password twice so they can use a password they like more.
+Minimum age of password means that that user has to stick around with that password for X-amount of time.
+Maximum age of password, alright, you have to change your password because it's a security policy, after X-amount of time.
+'Warning' how much time before the maxage should you warn the user that their passwords has to be changed.
+'Inactive' actual date of when this account will become inactive.
+'Expire', when the account will stop working.
+
+Password aging
+We can use  chage  to implement a password-aging policy.
+-----------------------------------------------------------------------------------------------
+    |                                                        |
+    |                       max days (-M)                    |                        
+    | |-----------------.------------------.---------------| |                        |
+    |                   .                  .                 |                        |
+    |                   .                  .                 |                        |
+    |   min days (-m)   .                  . warn days (-W)  |  inactive days (-I)    |
+    | |-----------------|                  |---------------| | |--------------------| |
+time|________________________________________________________|________________________|_______
+    |                                                        |                        |
+last change date (-d)                             password expiration date        inactive date
+-----------------------------------------------------------------------------------------------------------
+chage -m 0 -M 90 -W 7 -I 14 [username] // min days = 0, max days = 90, warning = 7 days, inactive = 14 days
+-----------------------------------------------------------------------------------------------------------
+chage -d 0 [username] // force change on next login
+-----------------------------------------------------
+chage -l [username]   // list user's current settings
+-------------------------------------------------------
+chage -E YYYY-MM-DD [username]  // will expire the account on a specific day
+
+When an account is locked, the password is changed to two exclamation marks (!!) because there's no way for you to match that password.
+To unlock the account, the root user has to change that user's password.
+
+--------------------------
+sudo usermod -L [username]
+--------------------------
+This will lock the account.
+
+There's a special option called  nologin
+-----------------------------------
+usermod -s /sbin/nologin [username]
+-----------------------------------
+Using that option, the user will be automatically logged out. When it's enabled, the account is not locked, just unusable.
+It's used for systems accounts that are needed but don't want users to log in as them.
+
+
+#permissions
+
+Everything in Linux is a file.
+We define what users can access to a file, read it, execute, modify.
+There are three categories of what we set permissions on:
+Owner - Group - Other
+
+The owner of the file is normally the person that created it. Has total control over it.
+The group of the file is the group of users that are allowed to use the file.
+The "other" group is everyone who's permissions aren't defined on the file.
+
+Permission  |           Effect on files           |                 Effect on directories                 |
+-----------------------------------------------------------------------------------------------------------
+r | read    | contents of the file can be read    | contents of the directory (file names) can be listed  |
+w | write   | contents of the file can be changed | any file in the directory may be created or deleted   |
+x | execute | files can be executed as commands   | contents of the directory can be accessed (dependent  |
+  |         |                                     |  on the permissions of the file in the directory)     |
+
+x permission on directories seems kinda crazy but it means you'll be able to  cd  into that directory
+-----------------
+ls -l [directory]
+-----------------
+This will show us the permissions of the files in that directory.
+
+------------------
+ls -ld [directory]
+------------------
+This will only show the permissions of the directory
+
+--------------------------------------------------------
+-rwxrwxrwx 1 student student
+^^  ^  ^   ^  ^       ^
+||  |  |   |  |       |
+||  |  |   |  |       Group that is on the file
+||  |  |   |  Owner of the file
+||  |  |  Number of links 
+||  | Other permissions
+|| Group permissions
+|Owner permissions
+File type: d if it's a directory, - if it's just a file.
+--------------------------------------------------------
+If you're the owner of the file, you must use the owner permissions.
+If you're not the owner but still you're in the group of the file, you must use the group permissions.
+If you're not neither the owner or a member of the group, you'll use the Other/World permissions.
+
+Unlike NTFS permissions, Linux only apply to the directory or file that they are set on.
+The permissions on a directory ...may... effectively block access to its contents.
+
+
+IMPORTANT NOTE: if a user has permissions on a directory, they can delete everything inside of it.
+
+Quiz:
+drwxrwxr-x fred flintstone dir
+  -rw-rw-r--  wilma   wilma       lfile1  // wilma and group wilma can read and write, others can read
+  -rw-r--rw-  wilma   flintstone  lfile2  // wilma and others can read and write, flintstone can read
+  -rw-rw-r--  fred    flintstone  rfile1  // fred and flintstone can read and write, others can read
+  -rw-r-----  fred    flintstone  rfile2  // fred can read and write, flintsone can read, others can't do anything
+
+rfile1  // is owned by fred and readable by all users
+lfile2  // contents may be modified by the user betty
+rfile2 [WRONG] the answer is all // can be deleted by the user fred. Keep in mind that fred owns the directory so he can delete anything.
+rfile2     // cannot be read by the user barney
+lfile1  // has a group ownership of wilma
+none    // can be deleted by the user barney
+
+
+Managing filesystem permissions
+
+The main command is  chmod  (change mode)
+The permissions on our file are known, historically, as "modes" of the file
+
+chmod  usage with symbolic method
+---------------------------------------------------
+chmod WhoWhatWhich file|directory
+      ^  ^   ^
+      |  |   |
+      |  |  Which is r, w, x (read, write, execute)
+      | What is +, -, = (add, remove, set exactly)
+  Who is u, g, o, a (user, group, other, all)
+---------------------------------------------------
+The symbolic method of changing a file permissions uses letters to represent the different groups of permissions
+u - user
+g - group
+o - other
+a - all
+
+The numeric method uses a different syntax
+------------------------
+chmod ### file|directory
+------------------------
+Each digit represents an access level: user, group, other
+# is sum of r = 4, w = 2, x = 1
+Makes sense because
+-----------------------
+r = 4           rwx = 7
+rw = 6          rw- = 6
+rwx = 7         r-x = 5
+w = 2           r-- = 4
+wx = 3          -wx = 3
+x = 1           -w- = 2
+                --x = 1
+-----------------------
+chmod go-rw <filename>
+-----------------------
+We're removing read and write permissions to group and other/world
+--------------------
+chmod a+x <filename>
+--------------------
+We're setting execute permission to owner, group and other.
+---------------------
+chmod 750 <directory>
+---------------------
+We're setting permissions to owner (rwx), group (r-x) and other (---)
+
+
+chmod  supports -R option, setting permissions recursively.
+
+
+Alright, but what if we want to change the file user or group ownership?
+Here it comeeeeeees...  chown  came to save the day.
+
+-----------------------
+chown [user] <filename>
+-----------------------
+Changes the owner of the file to the specified user.
+
+Ok, what about the group?
+-------------------------------
+chown [user]:[group] <filename>
+-------------------------------
+
+
+There are special permissions...
+Special? Yeah
+
+setuid (or setgid) changes the behavior of a executable program
+When you execute the file that has an (s) on instead of an (x), you'll be running that command as the owner of the file.
+sticky bit sets a special restriction on deletion of files (t) instead of (x). Basically, you can't remove files that you don't own in the directory that you're in.
+
+u+s (suid) - file executes as the user that owns the file, not the user that ran the file
+g+s (sgid) - file executes as group that owns the file | files newly created in the directory have their own group owner set to match the group owner of the directory
+o+t (sticky) - Users with write permission on the directory can only remove files that they own; they cannot remove or force saves to files owned by other users
+
+
+THEY LIED TO US!!!!!
+Remember the numeric method for  chmod 777  ?
+It goes r = 4, w = 2, x = 1...but how do you set an special bit?
+Well, apparently, there are four columns, not three
+s (suid) = 4, s (sgid) = 2, t (sticky bit) = 1
+---------------------
+chmod 4540 <filename>
+---------------------
+This will set the program to execute as the owner of the file.
+
+
+Default umask
+When you create a file, it receives permissions by default. Where those permissions came from?
+The way it works it's something called umask.
+Instead of saying which permissions you want to set by default, you set the permissions that you DON'T want to set by default.
+-----
+umask
+-----
+This will output the current umask
+
+You may think "Why the execute permission isn't enabled by default if it's not defined on umask?"
+When you create a file, we don't turn on the execute bit by default, you have to do it after you create the file.
+When you create a directory, it's the opposite thing. By default, you need permission to   cd  in that directory.
+
+The  umask  is configured in your startup shell scripts, your login scripts. You have either a systemwide shell initialization file called /etc/profile and /etc/bashrc but you can override it for your own user on .bash_profile and .bashrc files.
+
+/etc/bashrc and /etc/profile
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+|||||||||||||||||||||||||||||||||||
+|||REMEMBER TO CHANGE BOTH FILES|||
+|||||||||||||||||||||||||||||||||||
+Search for "umask" to set the umask systemwide.
+
+
+----------
+umask 0000
+----------
+This will change the umask for the current session.
+
+
+
+#process
+
+Processes
+They're a running instance of a launched, executable program.
+A process consists of:
+- an address space of allocated memory,
+- security properties including ownership credentials and privileges,
+- one or more execution threads of program code, and
+- the process state.
+
+The environment of a process includes:
+- local and global variables,
+- a current scheduling context, and
+- allocated system resources, such as file descriptors and network ports.
+
+Every process forks into a child.
+A process works with environment variables.
+
+--------------------------------------------------------------------
+process -fork---> parent process -wait-->parent process-->process-->
+            |                                            /|\
+            |                                             |
+            ----->child process-exec->child process--exit-|-->zombie
+--------------------------------------------------------------------
+Process life cycle
+
+Process starts, child is created.
+Parent goes to sleep while the child is still working.
+After the child is done, it goes into zombie state and the parent works again.
+
+If we let the child process do whatever it wants to, it can modify the structure of the parent process.
+We let the child do whatever it needs with its environment while running.
+When the child is done, we throw away their environment.
+The parent process exactly where it went to sleep, knowing it's own structure is still the same.
+Child processes attempt to clean by themself but the last thing they can't do while are alive is kill itself.
+Child needs to go into zombie mode for the system to kill it's process.
+When the parent process is awake, the first thing it has to do is go and kill his zombie child.
+
+
+Process states
+----------------------------------------------------------------
+                S[T]opped         [R]unning (user)
+ fork            /|\ |                  | /|\             [X]
+  |               |  |                  |  |              /|\
+  |       suspend |  | resume   syscall |  | return        | reap
+  |               |  |                  |  |               |
+ \|/  schedule    | \|/         run    \|/ |     exit      |
+ (new)--------->[R]unnable ---------> [R]unning ------> [Z]ombie
+                 (ready) <-----------  (kernel)
+                 /|\       preempt or     |
+                  |       reschedule      | wait
+       event or   |                       |
+        signal    |   ____________________|
+                  |   |         |         |
+                  |  \|/        |         |
+                  ---[K] Sleep \|/        |
+                             [D] Sleep   \|/
+                                   [S] Sleeping
+----------------------------------------------------------------
+A fork process creates a new structure.
+When it's ready to run, it's scheduled.
+A process waiting to be allowed to be put on the CPU is known as a runnable state.
+Running kernel and running user are processes that are actually running in the CPU in a CPU queue right now.
+Runnable is waiting for CPU.
+Processes that are not ready to run, that are waiting for resources to come in, data to come from a file, activity to come in from a network, users to input, those are not runnable yet because they don't have the data they need.
+A process that is waiting for something, if we give it access to the CPU but can't do anything without the data it's waiting.
+While processes are waiting for something, they go into a state known as Sleeping [S].
+You can suspend a process and put it into a Stopped status [T].
+When the process is done and it actually exits, it will go into a Zombie state (only because it can't completely clean itself up).
+The parent process will reap the zombie child (X)
+||||||||||||||||||||||||||||||||||||||||
+||| it can't clean it's own existence|||
+||||||||||||||||||||||||||||||||||||||||
+
+Name      Flag    Kernel-defined state name and description
+Running   R       TASK_RUNNING: the process is either executing on a CPU or waiting to run.
+
+Sleeping  S       TASK_INTERRUPTIBLE: The process is waiting for some condition (hw request, system resources, signal).
+          D       TASK_UNINTERRUPTIBLE: The process is also Sleeping but won't respond to signals.
+          K       TASK_KILLABLE: Identical D state but modified to allow the waiting task to respond to a signal to be killed.
+
+Stopped   T       TASK_STOPPED: The process has been Stopped (suspended), usualy by being signaled by a user or another process.
+
+Zombie    Z       EXIT_ZOMBIE: A child process signals its parent as it exits. All resources (except the PID) are released.
+          X       EXIT_DEAD: When the parent cleans up (reaps) the remaining child process structure, now it's completely released.
+
+Interrupting D could lead to problems if interrupted (like writing on a hard drive).
+
+------------
+ps [options]
+------------
+Command to view processes running at the  time of usage.
+
+ps supports three option formats:
+UNIX (POSIX) options, grouped and preceded by a dash,
+BSD options, grouped and must not be used with a dash, and
+GNU long options, preceded by two dashes.
+
+ps -aux is not the same as ps aux
+
+------
+ps aux
+------
+Common display listing of all processes with columns in which users will be interested and processes without a controlling terminal.
+------
+ps lax
+------
+A long listing provides more technical detail but may display faster by avoiding the username lookup
+------
+ps -ef
+------
+Display all processes
+
+VSZ = Virtual Set Size, how much space it takes in memory
+RSS = Resident Set Size, how much it's taking in live memory right now
+
+----
+ps j
+----
+This shows jobs running
+
+---
+top
+---
+Show processes on real time.
+
+Quiz:
+Options: D R S T Z
+
+Process has been stopped (suspended)                      // T
+Process has released all its resources except its PID     // Z
+Process is running or waiting to run on a CPU             // R
+Process is sleeping until some condition is met           // S
+Process is waiting for I/O or some condition to be met    // D
+and must no respond to signals
+
+Controlling Jobs
+
+Job control is designed to give you the capacity to do more than one thing at a time when you're in a limited environment where you've only got one terminal.
+
+Better explanation?
+You only have ONE terminal. Yeah, only one. How do you manage the work with only one terminal?
+
+Job control is a feature of the shell which allows a single shell instance to run and manage multiple commands.
+
+When we start jobs and put them in the background, each of them gets associated with a job ID.
+
+And all jobs, if you run a process that uses pipes to chain processes together is a pipeline and we get a single job number with that pipeline (process group).
+
+There can only be one job that connects to your keyboard and your screen.
+
+The only job in the foreground is the only one connected to the terminal.
+Jobs in the background are those without access to the terminal (because there's already a foreground running).
+
+Background jobs can still send STDOUT and send it to the screen.
+Not always system daemons are running in the background.
+
+If we check  ps -ef , some processes has their command inside brackets.
+Those are known as kernel threads. Most of them run on the background.
+
+Who do we get to run more than one thing at a time?
+You put it on the background!
+
+-----------
+[command] &
+-----------
+The ampersand makes it run on the background, leaving us the prompt ready to execute another command.
+It'll output the job ID.
+
+----
+jobs
+----
+This will list the jobs running on the background.
+
+If we have a pipeline like this
+------------------------------------------
+[command] | sort | mail -s "Sort output" &
+------------------------------------------
+The job ID belongs to the last command (mail in this case).
+
+------------
+fg %[job ID]
+------------
+Bring job to foreground.
+
+We knew it couldn't be thaaaaat easy to send a process from the foreground to the background.
+First things first...
+Suspend the process to send it to the background. The good ol' Ctrl + Z is your friend this time.
+Ok...but now it's also stopped...I WANT IT RUNNING! NOW!
+
+
+----
+ps j
+----
+This will show jobs running.
+
+Once it's suspended, we can tell it to run by using
+-------------
+bg  %[job ID]
+-------------
+
+There's no distintion between Runnable and Running and as long as the process is not writing to the screen, it's going to look like it's on a Waiting state. That explains the S on  ps j  . If it weren't running, then a T will be shown instead of an S.
+
+Kill a job that is not in the foreground?
+--------------
+kill %[job ID]
+--------------
+
+What if it's on the foreground? Just Ctrl + C
+
+
+We comunicate with process by sending them signals.
+Some signals are sent between process.
+
+A lot of events can generate signals and send them to processes.
+
+||||||||||||||||||||||||||||||||||||||||
+|||| man 7 signal || thank me later ||||
+||||||||||||||||||||||||||||||||||||||||
+
+Signal Short  Definition          Purpose
+number name
+  1    HUP    Hangup              Used to report termination of the controlling process of a terminal. Also for process reinitialization.
+  2    INT    Keyboard interrupt  Causes program termination. Can be blocked or handled. Sent by pressing INTR key combination (Ctrl+c)
+  3    QUIT   Keyboard quit       Like SIGINT but also produces a process dump at termination. Sent by pressing QUIT key (Ctrl + \)
+  9    KILL   Kill, unblockable   Causes abrupt program termination. Can't be blocked, ignored or handled; always fatal.
+  15   TERM   Terminate           Program termination (default method). Can be blocked, ignored or handled. Process should close properly
+  18   CONT   Continue            Sent to a process to resume if stopped. Always resumes the process. Can't be blocked.
+  19   STOP   Stop, unblockable   Suspends the process. Can't be blocked or handled.
+  20   TSTP   Keyboard stop       Unlike SIGSTOP, can be blocked, ignored or handled. Sent by pressing SUSP key combination (Ctrl+z)
+
+Each signal has a default action, usually one of the following:
+Term - cause a program to terminate (exit) at once.
+Core - cause a program to save a memory image (core dump) then terminate.
+Stop - cause a program to stop executing (suspend) and wait to continue (resume).
+
+How do we send signals?
+
+Using...  kill  !
+Wait, isn't that just to kill processes?
+Well, you can use it for other signals too...
+
+
+--------
+kill [PID]
+--------
+Kills process with ID specified with the default signal (SIGTERM 15)
+--------------------
+kill -[signal] [PID]
+--------------------
+Sends specified signal to process with ID specified.
+The signal can be specified either by name or number.
+-------
+kill -l
+-------
+List signals available.
+-------------------------
+killall [command pattern]
+-------------------------
+SIGTERM to all the commands that matches the specified pattern
+-----------------------------------
+killall -[signal] [command pattern]
+-----------------------------------
+Same as kill but with killall and specified pattern :shrug:
+-------------------------------------------------
+killall -[signal] -u [username] [command pattern]
+-------------------------------------------------
+Sends the specified signal to the process that matches the specified pattern and belongs to the user, also specified...
+
+
+pkill  is like  killal
+Can signal multiple processes using an advanced selection criteria which can include:
+Command     processes with a pattern-matched command name
+UID         processes owned by a Linux user account, effective or real
+GID         processes owned by a Linux group account, effective or real
+Parent      child processes of a specific parent process
+Terminal    processes running on a specific controlling terminal
+
+-----------------------
+pkill [command pattern]
+---------------------------------
+pkill -[signal] [command pattern]
+---------------------------------
+pkill -G [GID] [command pattern]
+---------------------------------------
+pkill -P [Parent PID] [command pattern]
+---------------------------------------------------
+pkill -t [terminal name] -U [UID] [command pattern]
+---------------------------------------------------
+
+You must be careful because  pkill  will send the signal to one or more processes that matches the specified criteria.
+
+The command  w  will show us who's logged on the system and their activities.
+----
+w -f
+----
+
+The columns TTY and FROM tell us where's the user running or what terminal window they're running in.
+Why do we need to know about it?
+Sometimes we need to kill another user's processes and may not be able to get in touch with that user to ask them to do it.
+
+Users may be forced off a system for security violations, resource overallocation, or other administrative need.
+Users are expected to quit unnecessary applications, close unused command shells and exit login sessions when requested.
+Normally, users are idiots...and they don't do any of that -.-"
+
+We want to be able to lookup what are they running.
+
+------------------
+pgrep -l -u [user]
+------------------
+This will grep processes and show us the ones that are running under the specified user.
+
+What if we only want to kill everything running on X terminal?
+-----------------------------
+pkill -[signal] -t [terminal]
+-----------------------------
+This send the signal to everything running on the specified terminal.
+
+--------------------
+pstree -p [username]
+--------------------
+C'mon, I know you like those tree representations
+
+
+
+
+Monitoring process activity
+
+Load average is an exponential moving average of the load number, a cumulative CPU count of active system resource requests.
+·-· Ok, what does it means? First we figure out how many actual processes are actively requesting CPU service.
+
+What are the active requests?
+- Active requests are counted from per-CPU queues for running threads and threads waiting for I/O, as the kernel tracks process resource activity and corresponding process state changes.
+
+It's kind of difficult to get that information because processes are in constant transition from one core to another. So, we do a cumulative count and then divide it for the number of CPUs.
+
+- Load number is a calculation routine run every five seconds by default, which accumulates and averages the active requests into a single number for all CPUs.
+
+- Exponential moving average is a mathematical formula to smooth out trending data highs and lows, increase current activity significance, and decrease aging data quality.
+
+Exponentially, what we're going to do is try to graph the average of tihs overtime. We're more interested of where the number is going than what occurred five minutes ago.
+
+- Load average is the load number calculation routine result. Collectively, it refers to the three displayed values of system activity data averaged for the last 1, 5 and 15 minutes.
+
+Load average calculation
+
+- We do count process and threads because a process can have multiple threads of work that are being done and each of them are gonna affect the load average. Threads are considered separate tasks. The requests for these running threads are in a queue called nr_running queue and the threads that are waiting/sleeping are in a queue called nr_iowait. This corresponds roughly to the R state and the D state.
+
+- The load number is a global counter calculation, which is sum-totaled for all CPUs.  We don't have to worry about where threads get rescheduled to. 
+
+- Linux counts each physical CPU core and microprocessor hyperthread as a separated execution unit. We look at them as different CPUs. We call them virtual CPUs. When you ask Linux how many CPUs the machine have, it will respond with the number of cores.
+
+- Some UNIX systems only paid attention to what's going on the CPU to indicate system load. It didn't keep in mind the fact that some processes are waiting for others resources (data from a file, disk usage, network signal, etc).
+CPU utilization may be low but you're still waiting, that's why we combine the run queues with the queues that track actual process waiting for signals.
+
+---------------------------------------
+grep "model name" /proc/cpuinfo | wc -l
+---------------------------------------
+This will count the cores of the machine (both physical and hyperthread)
+------
+uptime
+------
+How long the system has been running, users logged and the load average of last 1, 5 and 15 minutes
+
+The propery way of doing it is to divide the load average among the CPU count.
+
+Example with a quad-core CPU:
+-----------------------------------------------------------
+$ uptime
+15:29:03 up 14 min, 2 users, load average: 2.92, 4.48, 5.20
+2.92  4.48  5.20
+/ 4   / 4   / 4
+-----------------
+0.73  1.12  1.30
+^     ^     ^
+|     |     Around 130% utilization per core  <---Overload
+|     Around 112% utilization per core   <--------|
+|
+Around 73% utilization per core
+-----------------------------------------------------------
+Idle CPU has a load average of 0
+100% busy CPU has a load average of 1
+Anything in between that range is a percentage of how busy the CPU is.
+
+Saturation happens at 100%, that's when processes start to wait in queue.
+
+
+Real-time process monitoring
+
+We can use commands like  ps  and  top  to see what's running
+
+---
+top
+---
+This will show a list that updates on real time. Opposite to ps , which has a static list
+USER    the process owner.
+VIRT    virtual memory is all memory the process is using,including resident set,shared libraries,and any mapped or swapped memory pages.
+RES     physical memory used by the process, including any resident shared objects (RSS in the  ps  command).
+S       process state. [D] Uninterruptable Sleeping, [R] Running or Runnable, [S] Sleeping, [T] Stopped or Traced, [Z] Zombie.
+TIME    total processing time since the process started. May be toggled to include cumulative time of all previous children.
+COMMAND process command name.
+
+Important keystrokes for  top
+
+KEY       Purpose
+? / h     Help for interactive keystrokes.
+l, t, m   Toggles for load, threads, and memory header lines.
+1         Toggle showing individual CPUs or a summary for all CPUs in header.
+s         Change the refresh (screen) rate, in decimal seconds (e.g 0.5, 1, 5)
+b         Toggle reverse highlighting for Running processes; default is bold only
+B         Enables use of bold in display, in the header, and for Running processes
+H         Toggle threads. Show process summary or individual threads
+u, U      Filter for an user name (effective, real)
+M         Sorts process listing by memory usage, in descending order
+P         Sorts process listing by processor utilization, in descending order
+k         Kill a process. When prompted, enter PID, then signal
+r         Renice a process. When prompted, enter PID, then nice_value
+W         Write (save) the current display configuration for use at the next top restart
+q         Quit
+
+
+#services
+
+
+systemd is a management system for starting up services and configuring your system when the system boots.
+Previously, System V was used instead of systemd
+systemd offers much more control and much more interaction between components within the startup system.
+SysV was a lot of scripts that run one after another but there was no real intelligence about understanding what one script accomplished and passing that information to another script.
+
+systemd is an architecture that allows services to announce what they need to start, what they need to restart, what dependencies they have with other types of services, to register themselves into the system.
+
+Instead of running one thing at a time to start up the system, we now have the capability of understanding all the services that need to be started and what their relationships are to each other. They start at the same time.
+Everything that can start first, will start together.
+
+Daemon - process that wait or runs on the background to perform the service. They are started automatically started at boot time and they'll continue to run until the system shutdown at the end.
+We don't just start services daemons that are what you consider to be those things that are running at a  ps  listing that are background processes. What also needs to happen is the init configuration.
+Some of them do start up background daemons but others just go and configure something.
+Not everything resolves on a background process that is running.
+
+Starting and stopping services may involve just a perform of configuration or actually starting up a background service.
+
+The first process used to be  init  , after the kernel loaded. This process was responsible for activating other services on the system and is the origin of the term "init system".
+Now it's replaced by systemd but it goes through all the system configurations that are on the system and decide what their relationships are and then decide who gets to go first.
+When you start a service that needs other services, it will start all the prerequisits that it needs to run.
+
+With systemd, shell-bashed service scripts are used only for a few legacy services.
+Configuration files with shell variables are being replaced (like those found in /etc/sysconfig). Those still in use are included as systemd environment files and read as NAME=VALUE pairs. They are no longer sourced as a shell script. The shell scripts just quits and are no longer restartable.
+
+---------
+systemctl
+---------
+Show what's running on the system.
+------------
+systemctl -l
+------------
+Sames as the first but won't abbreviate unit names, process tree entries and unit descriptions.
+
+There are different type of units. We can recognize them by the extension on the file names.
+
+- Service units have a .service extension and represent system services. This type of unit is used to start frequently accessed daemons, such as web server.
+
+- Socket units have a.socket extension and represent inter-process communication (IPC) sockets. Control of the socket will be passed to a daemon or newly started service when a client connection is made. Socket units are used to delay the start of a service at boot time and to start less frequently used services on demand. These are similar in principle to services which use the  xinetd  superserver to start on demand.
+Basically, xinted would wait for connection through a port that were looking for certain daemon. When the connection through that port was made, xinted went to find that service to satisfy that request.
+Sockets are listeners on certain network ports and will run services when they're called, not just from the boot.
+
+- Path units have a .path extension and are used to delay the activation of a service until a specific file system change occurs. This is commonly used for services which use spool directories, such as a printing system.
+They're watching for files in a directory. For example, when you send a file to the printer, it will be copied into the spool folder for printing jobs. That change (new file on the directory) will be catch by a path unit and run a service for it (printing, for example).
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+|||||                                                                                |||||
+||||| systemctl [status|start|reload|restart|stop] [name unit].[service|socket|path] |||||
+|||||                                                                                |||||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+--------------------------------------------------
+systemctl status [name unit].[service|socket|path]
+--------------------------------------------------
+This will show the status of the specified unit.
+
+--------------------------
+service [name unit] status
+--------------------------
+SysV alternative. Add -l to get a full output.
+
+
+Keywords in the status output:
+loaded              Unit configuration file has been processed
+active (running)    Running with one or more continuing processes
+active (exited)     Successfully completed a one-time configuration
+active (waiting)    Running but waiting for an event
+inactive            Not running
+enabled             Will be started at boot time
+disabled            Will not be started at boot time
+static              Can not be enabled, but may be started by an enabled unit automatically
+
+------------------------
+systemctl --type=service
+------------------------
+Query the state of only the service units
+
+-------------------------------
+systemctl is-active [unit name]
+-------------------------------
+This will return if the specified unit is active or not. Useful for scripting.
+--------------------------------
+systemctl is-enabled [unit name]
+--------------------------------
+Same as before but checks if the unit is enabled to run at boot time.
+
+-----------------------------------
+systemctl list-units --type=service
+-----------------------------------
+List the active state of all loaded units. Add --all to include inactive units.
+---------------------------------
+systemctl --failed --type=service
+---------------------------------
+View only failed services.
+
+------------
+ps -up [PID]
+------------
+Verify that the process is running.
+
+---------------------------------
+systemctl stop [unit name].[type]
+---------------------------------
+Stops the unit
+
+----------------------------------
+systemctl start [unit name].[type]
+----------------------------------
+Starts the unit
+
+------------------------------------
+systemctl restart [unit name].[type]
+------------------------------------
+Equivalent to stop and start. Process gets a new PID.
+
+-----------------------------------
+systemctl reload [unit name].[type]
+-----------------------------------
+Stop and start but keeps the same PID.
+
+---------------------------------------------------
+systemctl list-dependencies [unit name] [--reverse]
+---------------------------------------------------
+Shows all the dependencies that a process needs to run.
+--reverse  will show what units need to have the specified unit started in order to run.
+
+---------------------------
+systemctl stop cups.service
+---------------------------
+This will stop the printing service but the output will show that cups.path and cups.socket can still reactivate the service.
+
+Masking services
+What to do when we have a process that we don't want to run but someone else with administrator permissions can re-enable it?
+Just mask it!
+
+---------------------
+systemctl mask [unit]
+---------------------
+Makes the server disappear from normal listings and also makes it unable to be automatically started up.
+
+-----------------------
+systemctl unmask [unit]
+-----------------------
+Unmasks the unit.
+
+------------------------------
+systemctl enable [unit].[type]
+------------------------------
+This will start the unit everytime the system boots.
+
+-------------------------------
+systemctl disable [unit].[type]
+-------------------------------
+The unit won't start at boot time.
+
+-----------------------------------------------
+Three levels of starting and stopping a service
+-----------------------------------------------
+Running                       systemctl start
+  |
+ \|/
+Stopped   systemctl stop      systemctl enable
+  |
+ \|/
+Disabled  systemctl disable   systemctl unmask
+  |
+ \|/
+Masked    systemctl mask
+-----------------------------------------------
+
+**Check systemd.service man page**
+
+
+
+#sshconfig
+
+The objective here is to connect through OpenSSH.
+
+What is OpenSSH?
+OpenSSH is an implementation of what's known as Secure Shell remote access program and it allows you to open up a shell when you're using another machine.
+You need your credentials to log into the machine you're connecting to.
+
+-----------------
+ssh [remote host]
+-----------------
+This will connect us through SSH to the remote host.
+If you don't specify the user, it will try to connect with your local username. If it doesn't exists, you'll be prompted to write the username and then the password.
+
+Want to run just one command?
+---------------------------------------------
+ssh [remote username]@[remote host] [command]
+---------------------------------------------
+This will connect, ask for the password and output that command.
+
+If we do an  w -f  , we can see everyone who's session is running. At the column FROM we can see users that are connected remotely.
+
+SSH host keys
+Passwords can be stolen and it's bad. You can use SSH keys to have the server and the local machine to be recognized and trusted each other.
+The actual server-side had generated a key set and we're gonna use that key set to trust and recognize that server.
+Host IDs are stored in ~/.ssh/known_hosts
+Host keys are stored in /etc/ssh/ssh_host_key*
+
+There are two types of key and they make a distintion between symmetric keys and asymmetric keys.
+
+Symmetric key - you use the same key to encrypt and decrypt files. Both sides needs to use the same key.
+
+Asymmetric key - we create key pairs. It's a matching set, they work together. Every user has a private key and the rest of the world a public key. If you encrypt something with your private key, it can be only decrypted with your own private key. If we encrypt something with the public key, it can only be decrypted with your private key.
+The private key is stored locally on a disk. The public key is available for everyone.
+
+Opening a file with your private key, proves that you're the one opening that file. No one else can have the same key.
+
+If someone encrypts something with your private key, means that they want you and only you to decrypt it.
+
+When a SSH server is installed, that SSH server will automatically create a public-private set for the server's use. The server saves a copy of the private key and makes the public key available.
+
+At the first connect through SSH with that server, we'll get a copy of the public SSH key. Every time we connect to that server, we're checking against that copy of the public SSH key to make sure we're connecting to that server (handshake).
+If another server tries to pretend they're the server we're trying to connect, that fake server won't have the private key that matches with the public key we got before.
+
+SSH keys don't match? Probably the server changed their key or we are hitting the wrong server.
+
+The private key is on the matching file that extends to .pub
+You pick up the server's public key the first time you connect.
+In a high security environment you may want grab the public key, send it and save it for other users, that way you can know if you're connecting to the right server.
+
+Configuring your own SSH key-based authentication.
+It's considered to be more secure than the usage of passwords.
+Once you set your key, you will get connected without passwords.
+
+----------
+ssh-keygen
+----------
+This will generate a private key at ~/.ssh/id_rsa and the public key ~/.ssh/id_rsa.pub
+When you build this, you can use a passphrase to secure your key, adding more security (you have to give the passphrase everytime you use it).
+
+---------
+ssh-agent
+---------
+The agent will enter the passphrase for you while you stay logged in.
+
+Before the key-based authentication can be used, the public key needs to be copied to the destination system.
+-----------------------------
+ssh-copy-id [user]@[hostname] [-p XXXX]
+-----------------------------
+This will copy the local public SSH key to the remote destination.
+
+----------------------------------------------------------------------------
+$ ssh-keygen rsa 2048 -> Local HDD-> /home/user/.ssh/key_rsa
+                                |-> /home/user/.ssh/key_rsa.pub
+
+$ ssh-copy-id user@hostname -> SSH server -> /home/user/.ssh/authorized_keys
+If you configured it properly, you'll access without a password prompt.
+----------------------------------------------------------------------------
+You can have many public keys from other people into the same server.
+
+Server-side security
+
+We may want to disable root access.
+The configuration file of ssh is on /etc/ssh/sshd_config
+sshd = ssh daemon.
+
+In order to turn the root login off, we need to modify the configuration file in the server.
+--------------------------
+# vim /etc/ssh/sshd_config
+--------------------------
+And uncomment the sentence
+-----------------------------------------
+PermitRootLogin [yes|no|without-password]
+-----------------------------------------
+The  without-password  means that you need the public key from the user copied to the server.
+
+After that, you need to restart the service with systemctl
+
+Alright, what if we want to force everyone to use keys instead of passwords?
+-------------------------------
+PasswordAuthentication [yes|no]
+-------------------------------
+
+#logfiles
+
+Logs are persistently stored on /var/log
+The syslog program has been enhanced and now it's  rsyslog
+RHEL syslogs are handled by two services,  systemd-journald  and  rsyslog
+systemd-journald has more benefits because rsyslog won't log if it's not started.
+
+Installing software creates more logs into the /var/log folder.
+
+The important logs in RHEL
+
+/var/log/messages
+Most syslog messages are logged here. The exceptions are messages related to authentication and email processing, that periodically run jobs, and those which are purely debugging-related.
+
+/var/log/secure
+The log file for security and authentication-related messages and errors. (permissions errors and that stuff)
+
+/var/log/maillog
+The log file with mail server-related messages.
+
+/var/log/cron
+The log file related to periodically executed tasks.
+
+/var/log/boot.log
+Messages related to system startup are logged here. Check it first for troubleshooting boot problems.
+
+Quiz:
+
+/var/log/messages
+/var/log/secure
+/var/log
+/var/log/maillog
+/var/log/cron
+/var/log/boot.log
+
+
+
+
+The rsyslog daemon has a serie of rules to decide where those messages goes.
+It doesn't understand event messages, it won't fix problems or detect errors.
+It's only job is recognize the type of message and where they might be coming from and to put them in the right log files.
+
+How do we recognize the messages that are coming through?
+
+Every message that comes through, comes from a certain facility.
+If it's an authentication method, it comes from the auth facility. User running process = user facility.
+They also come with a certain priority or severity level.
+
+Code    Priority    Severity
+0       emerg       System is unusable.
+1       alert       Action must be taken immediately.
+2       crit        Critical condition.
+3       err         Non-critical error condition.
+4       warning     Warning condition.
+5       notice      Normal but significant event.
+6       info        Informational event.
+7       debug       Debugging-level message.
+
+/etc/rsyslog.conf
+That file contains rules that define how to recognize the messages that come through and where to send them.
+Filters that are based on the facility and the priority, that helps to decided where the log goes.
+Some messages can qualify for many rules and be sent to many log files.
+
+#### RULES ####
+#kern.*   /dev/console
+*.info;mail.none;authpriv.none;cron.none   /var/log/messages  // everything above *.info (6) will go here. Exclude mail, authpriv and cron
+authpriv.*      /var/log/secure
+mail.*          /var/log/maillog
+cron.*          /var/log/cron
+*.emerg         :omusrmsg:*   // everybody gets emergency messages. This is a special syntax.
+uucp,news.crit  /var/log/spooler  // save news errors of level crit and higher in a special file.
+local7.*        /var/log/boot.log
+
+We can create a new file for rules inside /etc/rsyslog.d/
+
+Logs are rotated to prevent having big files with all the logs on it.
+We can truncate them to a certain size.
+The system will delete old files if you don't copy or archive them.
+
+---------
+logrotate
+---------
+Rotates, compresses and mails system logs. (extracted from man page).
+This will rotate the log file, adding the date of the rotation to it's name (/var/log/messages-YYYYMMDD) and create a new one.
+After a certain number of rotations, typically after four weeks, the old log file is discarded to free disk space.
+logrotate is daily run to see if any logs need to be rotated.
+
+
+Analyze a syslog entry
+
+The logs written by rsyslog start with the oldest message on top and the newest message at the end of the log file.
+All log entries are recorded in a standard format.
+timestamp:host:process:message
+
+Oct  8 18:25:43 localhost sshd[3041]: Server listening on :: port 22.
+|-------------| |-------| |---------|  |-----------------------------|
+   Timestamp      Host      Process               Message
+
+We can fake a message using
+------------------------------------------------------
+logger -p local7.notice "Log entry created on serverX"
+------------------------------------------------------
+logger -p [facility].[level] [message]
+--------------------------------------
+
+Reviewing systemd Journal Entries
+
+Systemd journalctl is a new facility introduced in RHEL 7.
+Allows you to see messages that normally aren't caught by rsyslog
+Starts earlier on the boot process
+It writes on /run but the log isn't saved by default.
+
+----------
+journalctl
+----------
+Without any options, it will display everything that has on it.
+High priority messages will be shown in bold text. Error and higher will display in red.
+
+------------------------------------------
+journalctl -n [number of lines to display]
+------------------------------------------
+Like tail
+
+---------------------------------------
+journalctl -p [priority name or number]
+---------------------------------------
+Shows messages with the requested priority
+
+-------------
+journalctl -f
+-------------
+Just like tail, you can update the output on real time.
+
+----------------------------------------------------------------------------------------------------
+journalctl --since [date (today | YYYY-MM-DD HH:MM:SS)] --until [date (today | YYYY-MM-DD HH:MM:SS)]
+----------------------------------------------------------------------------------------------------
+Show the messages between those dates (you also specify only one of those).
+
+There are some fields attached to the log entries that can only be seen when verbose output is turned on.
+---------------------
+journalctl -o verbose
+---------------------
+This will open journalctl on verbose mode. You can find some stuff like the boot id, machine id, executable location, etc.
+Most relevants lines
+_COMM           //  name of the command
+_EXE            //  The path of the executable for the process
+_PID            //  The PID of the process
+_UID            //  The UID of the user running the process
+_SYSTEMD_UNIT   // The systemd unit that started the process
+
+----------------------------------------------------------------------------
+journalctl _SYSTEMD_UNIT=[unit name].[service|socket|path] _PID=[Process ID]
+----------------------------------------------------------------------------
+Show the logs of the specified process
+
+Preserving the systemd journal
+Previously stated, the journalctl won't survive a reboot. This is the way to make it persistent.
+Default /run/log/journal
+If /var/log/journal exists, then the journal will be saved there.
+We just need to create the directory "journal" inside of /var/log
+
+---------------------------
+sudo mkdir /var/log/journal
+---------------------------
+That's it!
+Make sure that /var/log/journal is owned by root and group systemd-journal with the 2755 permission.
+-------------------------------------------
+chown root:systemd-journal /var/log/journal
+-------------------------------------------
+Ownership of the directory.
+---------------------------------
+chmod 2755 /var/log/journal
+---------------------------------
+Remember: 2 - execute as group, 7 rwx, r-s, r-x
+
+Still won't be permanent. The journal has a built-in log rotation (just like rsyslog) that will trigger monthly.
+By default, the journal won't be allowed to get larger than 10% of the file system it is on, or leave less than 15% of the file system free.
+You can mess around the settings at /etc/systemd/journald.conf
+
+After making changes, we need to restart the service by doing a reboot or...
+------------------------------
+killall -USR1 systemd-journald
+------------------------------
+Send the USR1 signal to the systemd-journald process.
+The USR1 signal is a user defined signal.
+
+-------------
+journalctl -b
+-------------
+Limit journal output by only showing the log messages since the last boot of the system, preventing the file to keep old boots (they will be saved on different files).
+
+----------------
+journalctl -b -1
+----------------
+This will limit the output to the previous boot.
+
+Maintaining Accurate Time
+
+We need to keep accuracy on the time when we're working with logs.
+Connecting to other servers with accurated time, we'll make sure that our system stays at the correct time.
+
+The most important thing to keep it accurate is to not change the time manually.
+
+Changing time from one to another will create discontinuities and software like databases and logfiles won't understand it.
+
+There's a protocol called Network Time Protocol (NTP) to connect and get time from a NTP server.
+RHEL 7 replaced the normal NTP client with a much more manageable and accurate system known as chronyd.
+
+-----------
+timedatectl
+-----------
+Show us information about how the system time is configured (timezone, date and time, ntp usage)
+
+--------------------------
+timedatectl list-timezones
+--------------------------
+Can't remember the timezone? Just write this and get a list in alphabetic order.
+
+-----------------------------------
+timedatectl set-timezone [Timezone]
+-----------------------------------
+Sets the time to selected timezone.
+
+--------
+tzselect
+--------
+Search timezone interactively
+
+----------------------------------------
+timedatectl set-time YYYY-MM-DD hh:mm:ss
+----------------------------------------
+Sets the time to the specified one
+
+--------------------------------
+timedatectl set-ntp [true|false]
+--------------------------------
+Enables or disables NTP synchronization
+
+The service that we use to synchronize with NTP is chronyd
+It either is connected to an NTP server or we're attempting to stabilize and use the local run time clock
+We keep track of the times in a driftfile (calculates the time) specified on /etc/chrony.conf
+By default, chronyd uses servers from the NTP Pool Project for the time synchronization and doesn't need additional configuration.
+It may be useful to change the NTP servers when the machine in question is on an isolated network.
+
+How good the quality is determined by the  stratum  value reported by the time source.
+The stratum is the number of hops the machine is away from a high-performance reference clock.
+
+0   reference clock (atomic clock)
+1   server connected to the reference clock
+2   servers connected to the first server
+
+When you configure chrony, there are two types of time sources. It would be either a server or a peer.
+The server is one stratum above the local NTP server
+The peer is at the same stratum level. Peers check with each other.
+
+The first argument to the server line is the IP address or DNS name of the NTP server.
+Use the option  iburst  . That will start four measurements in a short time perioud when the service starts, for a more accurate initial clock synchronization
+
+It could take a while the first time you're correcting the time with a NTP server because the system wants to send some messages and wait till it calculates exactly what it should do next.
+
+The distance and latency with the NTP server could be a problem.
+
+/etc/chrony.conf
+server classroom.example.com iburst
+
+After making a change, use systemctl to restart chronyd
+
+From the client side, we use the command  chronyc to ask information about the chrony setup
+It's useful to verify the NTP that was used to synchronize the system clock.
+--------------------
+chronyc sources [-v]
+--------------------
+This will show us the NTPs we're connected to, their stratum and the last sample we received.
+One of the NTPs will have an asterisk * at the beginning. That means we're using that NTP as source.
+Back in RHEL 6 and earlier, ntpd and ntpq were used for NTP configuration.
+
+
+#networking
+
+IPv4 networking
+We use the TCP/IP standard and it's a four-layer network model.
+Standard for physical wire (media access or the link layer). This provides connection to the physical media (Ethernet). Large prevalence of Wireless.
+Every media access has a MAC address, unique for each device. This recognize devices when sending packages.
+Internet layer - where we set internet IP, Internet Protocol, addresses. Logical address. Those IP are used on endpoints during conversation.
+Networks are organized on hub and switches. Subnets needs to be connected to be larger, so we use router devices.
+ICMP - Internet Control Messaging Protocol, allows to send messages between machines concerning the status or the capabilities of this layer of the network.
+Transport layer - TCP and UDP.
+TCP is designed as a protocol that is good for transmiting streams of data (large files, open communication) Transmission Control Protocol. Includes the capability of sequencing and package acknowledgment and if packages within the stream are loss, it will detect they weren't acknowledged and will try to retransmit them.
+UDP is known as conectless becuase it really does none of what TCP is meant to be. User Datagram Protocol is meant for quick query-type conversations. One packet sent a question and one packet replies. Most of the time is just one question and answer.
+
+TCP for large data.
+UDP for queries.
+
+The top layer is the application that does whatever it does with the connection.
+---------------------------------------------------
+IP Address
+172.17.5.3    = 10101100.00010001.00000101.00000011
+Netmask                  Prefix: /16
+255.255.0.0   = 11111111.11111111.00000000.00000000
+                10101100.00010001.00000101.00000011
+                |----Network----| |------Host-----|
+                    172.17               5.3
+
+IP Address
+192.168.5.3   = 11000000.10101000.00000101.00000011
+Netmask                 Prefix: /24
+255.255.255.0 = 11111111.11111111.11111111.00000000
+                11000000.10101000.00000101.00000011
+                |----Network-------------| |-Host-|
+                      192.168                5.3
+---------------------------------------------------
+Every subnet, every individual network has switches.
+All of the host within the subnet, will share the same network ID.
+All the machines within a physical segment, must have the same network portion but each of them has to have a separate host portion
+We use the netmask to distinguish which part of the address is the network and which part of the number is the host.
+The netmask divides between network and host
+
+The last part being 0 means the network, not a host.
+
+Host addr   192.168.1.107         11000000.10101000.00000001.01101011
+Net prefix  /24 (255.255.255.0)   11111111.11111111.11111111.11111111
+Net addr    192.168.1.0           11000000.10101000.00000001.00000000
+Broadcast   192.168.1.255         11000000.10101000.00000001.11111111
+
+The network prefix means how many bits belong to the network and how many bits belong to the host.
+Every host will listen for the broadcast. That way we know the machines are connected.
+
+Host addr   10.1.1.18        00001010.00000001.00000001.00010010
+Net prefix  /8 (255.0.0.0)   11111111.00000000.00000000.00000000
+Net addr    10.0.0.0         00001010.00000000.00000000.00000000
+Broadcast   10.255.255.255   00001010.11111111.11111111.11111111
+
+Host addr   172.168.181.23        10101100.10101000.10110101.00010111
+Net prefix  /19 (255.255.224.0)   11111111.11111111.11100000.00000000
+Net addr    172.168.160.0         10101100.10101000.10100000.00000000
+Broadcast   172.168.191.255       10101100.10101000.10111111.11111111
+
+The smaller is the network mask, the more hosts we can have. It doesn't have to be exactly binary octets.
+
+
+------------------------------------------------
+            | DNS SERVER |
+                  | 172.17.53.1
+                  |               172.17.0.0/16
+| Internet |______|____________________________
+                    |
+                    | 172.17.77.6
+Default gateway for |
+192.168.5.0/24  | Gateway |
+                    | 192.168.5.254
+                    |
+                    |             192.168.5.0/24
+____________________|___________________________
+        |                          |
+        | 192.168.5.3              | 192.168.5.1
+  | Machine |                 | Machine |
+-------------------------------------------------
+Own explanation:
+The 172.17.77.6/16 (net prefix 255.255.0.0) is the public IP, assigned by the DNS (172.17.53.1) owned by the ISP.
+That outcoming connection comes from the router (Gateway), which has an internal IP of 192.168.5.254/24 (255.255.255.0)
+Each machine has their own IP inside that subnet (192.168.5.[###]/24)
+DNS server doesn't need to be on the same subnet.
+
+A router is a device that can move packets from one subnet to another.
+
+IPv4 routing
+
+Router keep track to what networks it tracks or what networks it's connected to. Everytime it sees requests, it know which interfaces are connected to those networks.
+
+0.0.0.0/0 (default)     it's the default gateway.
+
+Every single system and/or interface has an IP address but also has a name.
+There's a translation between the IP addresses and the host names.
+The DNS saves the configuration of the machine names and the IP addresses.
+When you search a machine by it's hostname, the DNS goes out and looks up the IP address of that machine.
+
+You, as administrator, decide what network IDs are going to go for each segment, what host numbers go on each host within a segment and you'll define this across your whole enterprise space.
+This may be a lot to configure and there are two ways of doing it.
+
+You can manually configure each machine but you also can use DHCP
+Dynamic Host Control(Configuration) Protocol
+We set up servers with addresses and automatically give each machine connected an address that belongs to the subnet.
+
+When you change network IDs, when you re-arrange subnets, or you change parameters of how that network works; it's easier to change it on the DHCP than going to each machine.
+
+Each of your network interfaces needs to have an unique network interface name.
+
+Traditionally, network interfaces in Linux are enumerated as eth0, eth1, eth2 and so on.
+Instead, now we use a new naming scheme based on how the BIOS recognizes the device.
+
+enp6s0
+
+First characters are the type of interface
+Ethernet    en
+WLAN        wl
+WWAN        ww
+
+Then, the location of them
+On-board    o
+Hotplug     s
+PCI         p
+x  is not used but available to incorporate MAC address
+
+
+Finally, a number is used to represent an index, ID or port.
+If the fixed name cannot be determined, the default eth[number] will be used.
+
+You can override the network naming. If you have installed and enabled the package  biosdevname  or set customized  udev  device naming rules, these settings will override the default ones.
+udev  is a daemon.
+Depending on support for  biosdevname  in the system BIOS, names such as em1, em2, etc may be used for on-board network cards.
+PCI(e) cards are represented with pYpX (e.g p4p1) where Y is the PCI slot and X is the number for the port on that specific card.
+
+Quiz
+IP Address      Gateway     DNS server
+172.17.0.351/16 172.17.0.1  172.17.0.254    Invalid IPv4 address
+10.1.2.3/24     10.1.2.1    172.17.4.53     This configuration is feasible
+192.168.7.0/24  192.168.7.1 192.168.0.254   IP address cannot be a network address.
+10.4.5.6/24     10.4.6.1    192.168.0.254   Gateway is not on the same subnet // Note 1
+172.17.23.5/16  172.17.0.1                  Name resolution is not configured
+
+Note 1: error the DNS server would never be in the same network. The real problem with this case is that the subnet isn't the same.
+
+Valid Network Configuration
+
+Commands like  ifconfig  and  netstat  are deprecated now. They won't be updated and may not be able to perform some of the new actions.
+
+--
+ip
+--
+Just write it alone to get more help.
+
+-------
+ip addr
+-------
+Shows information about the device and address. /sbin/ip
+
+-----------------------------------------------------------------------------------------------------------------------------
+2: enp6s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+                               /|\
+                            An active interface has the status of UP
+    link/ether 88:d7:f6:7f:42:7f brd ff:ff:ff:ff:ff:ff    // the link line specifies the hardware (MAC) address of the device
+
+    The inet line shows the IPv4 address and prefix
+     |              The broadcast address, scope, and device name are also on this line
+    \|/                  \|/
+    inet 192.168.1.38/24 brd 192.168.1.255 scope global dynamic noprefixroute enp6s0
+       valid_lft 20097sec preferred_lft 20097sec
+    The inet6 line shows IPv6 information
+    \|/
+    inet6 fe80::e077:1ce3:6964:d677/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+-----------------------------------------------------------------------------------------------------------------------------
+
+---------------
+ip -s link show
+---------------
+This will show statistics of the interface.
+
+--------
+ip route
+--------
+Replaces netstat -r. Shows routing information.
+
+How to know if the network is working? Just use ping!
+----------------------
+ping [-c#] [ip|domain]
+----------------------
+The -c is the count of times it will ping.
+
+------------------
+tracepath [domain]
+------------------
+Traces the path to reach that domain.
+Each line represents a router or hop that the packet passes through between the source and the final destination.
+
+Troubleshooting ports and services
+TCP services use sockets as end points of communication and are made up of an IP address, protocol, and port number.
+Each service has a port, listening for communication.
+
+------
+ss -ta
+------
+Socket Statistics. -t = TCP sockets, a = show all
+Shows all the services running and what ports they're running on.
+
+------------------------------------------------------------------------
+State   Recv-Q  Send-Q    Local Address:Port          Peer Address:Port
+LISTEN  0       128                   *:sunrpc                   *:*
+
+LISTEN  0       128               (1) *:ssh                      *:*
+
+LISTEN  0       100       (2) 127.0.0.1:smtp                     *:*
+LISTEN  0       128                   *:36889                    *:*
+
+ESTAB   0       0        (3)  172.25.1.10:ssh       172.25.254.254:59392
+LISTEN  0       128          (4)       :::ssh                   :::*
+
+LISTEN  0       128           (5)     ::::ssh                   :::*
+LISTEN  0       100                   ::1:smtp                  :::*
+LISTEN  0       128                    :::34946                 :::*
+------------------------------------------------------------------------
+(1) The SSH service is listening to all the interfaces in the system.
+(2) Listening on smtp 36889 and also listening to the loopback (127.0.0.1)
+(3) There's a stablished connection on SSH, using the internal IP of 172.25.1.10 from the peer 172.25.254.254 that is using his own port 59392
+(4) SSH is also listening on IPv6. The double colon syntax means IPv6 *.
+(5) The mail server. ::1 is like the loopback of IPv6.
+
+Options of ss and netstat
+-n      Show the numbers instead of names for interfaces and ports.
+-t      Show TCP sockets.
+-u      Show UDP sockets.
+-l      Show only listening sockets.
+-a      Show all (listening and established) sockets.
+-p      Show the process using the sockets.
+
+Configuring Networking with nmcli
+
+Network Manager is a daemon that monitors anda manages network settings. There's also a GNOME notification area apple that provides network status information.
+Configuration files are saved in /etc/sysconfig/network-script
+Network Manager is a highly capable and very advanced configuration management tool designed to eliminate a lot of whole work trying to configure networks.
+In RHEL 6 is was possible to turn it off and go back to the manual method of configuration.
+You need to get to know it very well instead of turning it off.
+The configuration can be done through command line or through a GUI for NetworkManager (nmtui).
+
+From NM pov, a device is a network interface, a connection is a configuration used to make the device work. A connection is a collection of settings that make the device work.
+Only one connection configuration can be active on a device at a time.
+Since devices are separated from connection configurations, we can switch configurations anytime the software demands it.
+
+-------------------------
+nmcli con show [--active]
+-------------------------
+View basic network information.
+
+-----------------------------------
+nmcli con show [name of connection]
+-----------------------------------
+Shows the information related to the connection specified.
+
+Waaaaait...Does the device name must match the connection name?
+N o p e
+You can have multiple devices, multiple configurations but only one can be active at a time per device.
+
+---------------
+man nm-settings
+---------------
+This will show available configurations and their descriptions.
+
+----------------
+nmcli dev status
+----------------
+Shows all the available devices on the machine, which connection is used for each and whether it's connected or not.
+
+-----------------------
+nmcli dev show [device]
+-----------------------
+Shows details about the device.
+
+Creating network connections with nmcli
+
+You can have many but only one will be active.
+
+------------------------------------------------------------------------------------------------------
+nmcli con add con-name "[name for the connection]" type [type of connection] ifname [interface/device]
+------------------------------------------------------------------------------------------------------
+Create a new connection using the specified name, type of connection (e.g ethernet) and device (e.g eth0)
+The options while using  nmcli con add  need to be in certain order.
+
+-------------------------------------------------------------------
+nmcli con add [COMMON_OPTIONS] [TYPE_SPECIFIC_OPTIONS] [IP_OPTIONS]
+-------------------------------------------------------------------
+You can't put the common options, some type specific options and then another common option.
+IP options always go last, only if you need to use them.
+
+COMMON OPTIONS
+type, ifname, con-name, autoconnect (autoconnect is yes by default, unless you specify it)
+TYPE_SPECIFIC_OPTIONS
+There's a lot of them, some are better for wired connections, others for wireless, it depends.
+IP_OPTIONS
+ip4,ip6
+
+Important: ip4 and ip6 are used just like that "ip4 192.168.0.1". Also, gateway "gw4 192.168.254.254"
+
+
+---------------------------------------
+nmcli con up "[name of the connection]"
+---------------------------------------
+Changes the network to this connection.
+
+If your current connection is lost and you have another one that is the default, it will try to connect through the default one.
+
+----------------------------------
+nmcli dev disconnect [device name]
+----------------------------------
+Prevents device from connecting
+
+Type options
+Those options depends on the device that it's being used.
+An ethernet-type connection may optionally specify a MAC address for the connection.
+A wifi-type connection must specify the SSID and may specify additional options.
+
+------------------
+nmcli con add help
+------------------
+You can see all the options with this command.
+
+If we want to modify the connection, we have to change  add  for  con
+----------------------------------------------------------------------------
+nmcli con mod "[name of connection]" [type].[option] [yes|no|value if apply]
+----------------------------------------------------------------------------
+nmcli con mod "Wired Connection 1" connection.autoconnect no
+------------------------------------------------------------
+Editing a connection
+
+-----------------------------------------------------------------
+nmcli con mod "[name of connection]" [+|-][type].[option] [value]
+-----------------------------------------------------------------
+nmcli con mod "Wired Connection 1" +ipv4.dns 8.8.8.8
+----------------------------------------------------
+Values can be added or removed using + or -
+
+--------------------------------------------------------------------------------
+nmcli con mod "Wired Connected 1" ipv4.addresses "192.168.0.10/24 192.168.0.254"
+--------------------------------------------------------------------------------
+Replaces static IP and gateway
+
+----------------------------------------------------------------
+nmcli con mod "Wired Connected 1" +ipv4.addresses 10.10.10.10/16
+----------------------------------------------------------------
+Add a secondary IP without a gateway.
+
+Once you're done modifying, you need to up the connection again.
+
+nmcli
+dev status                          List all devices
+con show                            List all connections
+con up "[name of connection]"       Activate a connection
+con down "[name of connection]"     Deactivate a connection. The connection will restart if autoconnect is yes
+dev dis [device]                    Bring down an interface and temporarily disable autoconnect
+net off                             Disable all managed interfaces
+con add ...                         Add a new connection
+con mod "[name of connection]"      Modify a connection
+con del "[name of connection]"      Delete a connection
+
+Connections don't take devices out of use. If you down a connection with the autoconnect set on yes, Network Manager automatically will try to up the connection.
+Want to disconnect and leave the device without network? Just use nmcli dev dis [device]
+
+Editing Network Configuration Files
+
+Anything should be done using nmcli and the NetworkManager tools to automate the process.
+That's recommended way of doing it.
+By creating profiles, you can let software change the profile dynamically if the situation requires it.
+
+Back when RHEL 6 introduced NetworkManager, network scripts located at /etc/sysconfig/network-scripts/ifcfg-* that were manually modified, will have their changes reverted because NetworkManager was overwriting them.
+
+If you made a modification manually, you'll have to turn on NetworkManager and do a connection reload, then down and up the connection.
+
+----------------
+nmcli con reload
+----------------
+Reloads configurations based on your manual changes.
+
+Configuration Options for ifcfg File
+Static                    Dynamic           Either
+BOOTPROTO=none            BOOTPROTO=dhcp    DEVICE=eth0
+IPADDR0=172.25.x.10                         NAME="System eth0"
+PREFIX0=24                                  ONBOOT=yes
+GATEWAY0=172.25.x.254                       UUID=9a0b6fd9-f326-4a7f-85e4-c4123bde5a28
+DEFROUTE=yes                                USERCTL=yes
+DNS1=172.25.254.254
+
+The UUID parameter allows the NetworkManager to recognize each configuration separately.
+USERCTL allows non-root users to modify the network.
+
+
+Configuring Host Names and Name Resolution
+
+Hostnames aren't configured on the /etc/hosts file
+The static host name is stored in /etc/hostname
+Previous versions of RHEL stored the host name as a variable on /etc/sysconfig/network
+
+----------------
+ls -l /etc/host*
+----------------
+The lack of the hostname file means that the hostname wasn't defined.
+
+-----------------------------------
+hostnamectl set-hostname [hostname]
+-----------------------------------
+Change the hostname of the machine.
+
+------------------
+hostnamectl status
+------------------
+Shows information about the machine.
+
+Configuring name resolution
+The stub resolver is used to convert host names to IP addresses or the reverse.
+The contets of t he file /etc/hosts are checked first.
+
+-----------------------
+getent hosts [hostname]
+-----------------------
+Test host name resolution with the /etc/hosts file. Uses the /etc/nsswitch.conf on your machine to know about all the named services you use, including /etc/hosts
+
+If the entry isn't found on /etc/hosts , the stub resolver looks for the information from a DNS name server.
+/etc/resolv.conf controls how this query is done.
+NetworkManager will update the /etc/resolv.conf using the DNS settings in the connection configuration files.
+
+After add a DNS name server to the connection profile, we can check that NetworkManager wrote that information in the file that belongs to that profile.
+
+---------------
+host [hostname]
+---------------
+Test the DNS server conectivity
+
+
+If DHCP is in use, /etc/resolv.conf is automatically rewritten as interfaces are started, unless you specify PEERDNS=no in the relevant interfact configuration files.
+----------------------------------------------------------
+nmcli con mod "[connection name]" ipv4.ignore-auto-dns yes
+----------------------------------------------------------
+This will prevent NetworkManager to switch to the default DNS.
+
+
+#copyfilesbetweensystems
+
+tar  got it's name from being a tape-based backup. It would compress all the files.
+
+--------------
+tar [options]
+--------------
+We use  tar  to create an archive.
+
+Option  Description
+c       create an archive
+t       list the contents of an archive
+x       extract an archive
+f       file name of the archive to operate on
+v       verbosity; useful to see which files get added to or extracted from the archive
+p       preserve the permissions of an archived file
+P       won't strip the leading / from absolute paths
+--------------------------------------------------
+tar cf [resulting file name] file1 file2 file3 ...
+--------------------------------------------------
+This will create an archive with the specied name.
+Even if we don't use extensions on UNIX, it's good to save those archives as .tar to know what type of file is.
+
+Kinda messy but try to understand...
+When you try to compress some files using relative paths, those files will be extracted at the same path they were packed.
+That means, if the file belongs to ~/Documents , it will unpack on ~/Documents .
+
+The default way of tar is that we back up files with their absolute paths.
+When we archive a file using an absolute path, we leave the first backslash out
+/usr/share/foo ----> usr/share/foo
+That way files that are unpacked will be extracted relatively to the directory you're working on.
+
+In order to create a backup, you need to have read permission on all the files that you want to archive.
+If you don't have read permissions on some files, the tar backup is going to just omit those files.
+
+By default, extracted files won't have the executable permission unless the p option is used.
+
+While tar stores ownership permissions of the files, there are other attributes that aren't stored in the tar archive by default, such as the SELinux context and ACLs. To store those extended attributes in the tar archive, the --xattrs option is required when creating an archive.
+
+Files extracted keep the previous permissions and ownerships.
+
+There are some protocols for compression
+z       gzip     .tar.gz | .tgz
+j       bzip2    .tar.bz2
+J       xz       .tar.xz
+
+
+-----------------------------------
+tar czf /root/etcbackup.tar.gz /etc
+-----------------------------------
+Create a gzip-compressed tar archive on /root using the name of etcbackup.tar.gz of the /etc directory
+
+----------------------------------------
+tar cjf /root/logbackup.tar.bz2 /var/log
+----------------------------------------
+Uses bzip2 instead of gzip
+
+---------------------------------------
+tar cJf /root/sshconfig.tar.xz /etc/ssh
+---------------------------------------
+This time we're using xz to compress it
+
+Alright, now I want to extract the files
+
+------------------------------
+tar xzf /root/etcbackup.tar.gz
+-------------------------------
+tar xjf /root/logbackup.tar.bz2
+-------------------------------
+tar xJf /root/sshbackup.tar.xz
+------------------------------
+
+Copying files between systems securely
+
+You can send files through SSH using the  scp  command and sftp
+No need to manage or configure other services
+
+-----------------------------------------------
+scp [-r] [local files] [user@hostname:/path/to/copy]
+-----------------------------------------------
+Copies the specified files through SSH to the specified server. The -r option means recursively.
+
+Duuuuuuuuuuude!
+This works in both ways!!!
+
+----------------------------------------------------------
+scp [-r] [user@hostname:/path/to/files] [/path/to/extract]
+----------------------------------------------------------
+Copy a file from the remote server and puts it into the local machine.
+
+Remember that anytime you're copying something, you're creating a new file.
+The new file will have as owner the person who executes the command.
+Localuser executes scp to copy a local machine file, the remote copy command will be executed by the remoteuser on the remote machine.
+The permissions will be based on the default umask.
+
+
+sftp is an FTP interactive interface
+------------------------------
+sftp [-P port] [user]@[server]
+------------------------------
+Starts an sftp session on the remote server
+
+You can use commands such as  ls, cd, mkdir, rmdir and pwd.
+put  and  get  can be used to upload and download files.
+
+By default, sftp always assumes that the put command is followed by a file on the local file system ubicated on /home/[user]
+While you're on sftp, your working directory remains the same.
+
+Synchronizing files between systems securely
+
+scp  is good for copying files but what if we want to synchronize them and not download every file for every change?
+Well, here's your next tool: rsync
+
+The first time you use rsync, it will take the same amount of time that  scp  would take.
+The reason is that rsync is copying all the files specified, just like scp does.
+After the first time, when you synchronize again, it will only copy the stuff that has changed.
+
+I understand, is it there any way to test rsync without damaging my file system?
+--------
+rsync -n
+--------
+Perform a dry run. Simulation of what happens when the command really gets executed. It will show all the changes that rsync will made without affecting any files.
+It's recommended to perform a dry run of any rsync operation to ensure no important files get overwritten or deleted.
+
+-----------
+rsync -v -a
+-----------
+-v adds verbosity output and -a stands for "archive mode"
+When -a is being used, it enables the following options all in one:
+-r          synchronize recursively the whole directory tree
+-l          synchronize symbolic links
+-p          preserve permissions
+-t          preserve timestamps
+-g          preserve group ownership
+-o          preserve the owner of the files
+-D          synchronize device files
+-H          preserve hard links
+-A          synchronize ACLs
+-X          synchronize the SELinux context
+
+The only case to use -D is troubleshooting, because device files are rebuilt every time the system reboots.
+The -a option doesn't synchronize advanced permissions (ACLs or SELinux). You need to set -A and/or -X
+
+When you're using rsync to copy the content from a folder, remember to add the last / slash
+-----------------------
+rsync -av /var/log /tmp
+-----------------------
+This will result on /tmp/var/log
+
+------------------------
+rsync -av /var/log/ /tmp
+------------------------
+All the files inside /var/log/ will be copied to /tmp
+
+#softwareinstall
+
+Attaching systems to subscriptions for software updates
+
+If you're using using RHEL and you have a contract that includes software updates, you can use the tool Red Hat Subscription Management.
+
+YUM and PackageKit can get software from Red Hat repositories.
+
+There are four basic tasks performed with RHSM:
+Register - associates the current system to a Red Hat account. When no longer in use, the system may be unregistered.
+
+Subscribe - attach your system to particular subscriptions that you purchased or that you've registered for. Depending on the level of support, software and repositories that you're allowed to connect may vary.
+
+Enable repositories - you can enable or disable certain repositories available.
+
+Review and track - you can see entitlements which are available or consumed, what level of support you have. It's shown either on the Subscription Asset Manager (SAM) or the RH Customer Portal Subscriptions page.
+
+You can register a system using a GUI (Applications->System Tools->Red Hat Subscription Manager, subscription-manager-gui)
+Nowadays, you'll use subscription.rhn.redhat.com as the specified server.
+
+You have to use your legitimate account that has subscription entitlements.
+Unchecking the option "Manually attach subscriptions after registration" will make the system look automatically for your entitlements and see what is appropiate and attach subscriptions for you.
+
+Once you registered the system, there'll be a tab called "All Available Subscriptions"
+
+You can get free demo software from Red Hat with 30/90 days of support. That way you can test and get used to it.
+
+If you have more than one contract for a specific subscription, a dialog will open up, asking you to select which contract to use.
+There are different contracts for Physical and Virtual systems.
+
+Alright...What if I'm a pro command line user that don't like GUIs?
+
+---------------------------------------------------------------------------------------------------
+subscription-manager register --username=[your Red Hat username] --password=[your Red Hat password]
+---------------------------------------------------------------------------------------------------
+This will register and associate the system to a Red Hat account.
+
+--------------------------------------------
+subscription-manager list --available | less
+--------------------------------------------
+View available subscriptions
+
+----------------------------------
+subscription-manager attach --auto
+----------------------------------
+Auto-attach a subscription
+
+------------------------------------
+subscription-manager list --consumed
+------------------------------------
+View consumed subscriptions
+
+-------------------------------
+subscription-manager unregister
+-------------------------------
+Unregister a system
+
+An entitlement is a subscription that's been attached to a system. Digital certificates are used to store current information about entitlements on the local system. They are sign and checksum'd for verification.
+They're stored in /etc/pki and it's subdirectories.
+
+/etc/pki/product      certificates which indicate Red Hat products installed on the system
+/etc/pki/consumer     certificates which indicate Red Hat account to which the system is registered
+/etc/pki/entitlement  certificates which indicate which subscriptions are attached to the system
+
+You can inspect those certificates using the  rct  command but the subscription-manager is a more friendly tool to examine them.
+
+Quiz:
+
+Review and track        Determine the number of available subscriptions   
+Subscribe               Enable a system to use selected Red Hat products
+Register                Attach a system to a Red Hat account
+Enable repositories     Provide software packages
+
+RPM software packages and Yum
+
+A long time ago when Red Hat was first developed, the RPM (Red Hat) Package Manager was created as a way of packaging up files in a easy way to distribute.
+It contains dependencies for the software it installs. It's basically an archive.
+RPM package files are named using a naming convention.
+name-version-release.architecture
+------------------------------------
+httpd-tools-2.4.6-7.el7.x86_64.rpm
+^           ^     ^     ^
+|           |     |     Architecture
+|           |     Release
+|           Version
+Name
+------------------------------------
+Name            one or more words describing the contents.
+Version         the version number of the original software.
+Release         released number based on that version, set by the packager (who might not be the original software developer). After the number, it may specify the OS it was packaged for (.el7 = Enterprise Edition 7).
+Architecture    processor architecture the package was compiled to run on. "noarch" means that the package isn't architecture-specific.
+
+Each RPM package is a special archive made up of three components:
+
+The files installed by the package
+Information about the package (metadata), such as the name/version/release/arch; a summary and description of the package; whether it requires other packages to be installed; licensing; a package changelog; and other details.
+
+Scripts that may run when this package is installed, updated, or removed, or which are triggered when other packages are installed, updated, or removed.
+
+We can digitally sign RPM packages at the moment of packaging them. Normally, they're signed with the GPG private key from it's source.
+If the package is altered or corrupted, the signature will no longer be valid. This allows the system to verify package integrity before installing them.
+All RPM packages released by Red Hat are digitally signed.
+
+Software got an update? Then the whole program is packaged. When you update the package, we normally delete the previous version and replace it with the new version.
+What about my configurations? Configuration files are marked in a way that RPM knows they're configuration and yours will be preserved across an update.
+It also depends on the developer of the software. Maybe they don't want to proceed with an old configuration and it replaces yours with the default new one.
+Your old configuration won't be overwritten, it'll be backed up.
+
+YUM is a command line tool that knows how to install files and also knows the dependencies and the relationships between packages.
+YUM will install dependencies at the same time you install a program.
+It works by pointing to a server-side yum repository (yum server).
+
+------------
+yum repolist
+------------
+Shows the repositories available. The status column shows how many packages are in that repository.
+
+-----------------------
+yum list [package name]
+-----------------------
+Shows all the packages available to install. Adding a package name it will look for all the packages with similar name.
+
+------------------
+yum list installed
+------------------
+Pretty obvious but anyway: shows all the installed packages.
+
+Quiz:
+
+Version             The upstream source code version
+Changelog           List of reasons for each package build
+Release             The version of the package build
+Architecture        The processor type required for a specific package
+Repository          A collection of RPM packages and package groups
+GPG signature       Used to verify the source and integrity of a package
+
+Managing software updates with yum
+
+--------
+yum help
+--------
+Displays usage information
+
+-----------------------
+yum list [package name]
+-----------------------
+Displays installed and available packages
+
+--------------------
+yum search [keyword]
+--------------------
+List packages by keywords found in the name and summary fields only.
+
+-----------------------
+yum info [package name]
+-----------------------
+Gives detailed information about a package.
+
+-------------------------------------
+yum provide [path/to/file/or/program]
+-------------------------------------
+Search for the package that provides that file|program.
+
+--------------------------
+yum install [package name]
+--------------------------
+Install the specified package. It will ask you to install the dependencies (unless you add the -y option)
+
+-------------------------
+yum update [package name]
+-------------------------
+Updates the selected package. If there's no package specified, it will install all the relevant updates.
+
+-----------------
+yum update kernel
+-----------------
+Install the new kernel but won't remove the previous one.
+
+---------------
+yum list kernel
+---------------
+List of installed and available kernels.
+
+----------
+uname -ar
+----------
+Shows info about the current kernel.
+
+-------------------------
+yum remove [package name]
+-------------------------
+Removes a package and it's dependencies. Also removes packages that depends on the one you uninstalled first.
+
+There are some preconfigured groups of packages
+-----------------------------------
+yum [group list|grouplist] [hidden]
+-----------------------------------
+This will show the available groups of packages to install. Some of them may be hidden, you can display them by adding 'hidden'.
+
+------------------------------------------
+yum [group info| groupinfo] "[group name]"
+------------------------------------------
+Shows information about the group and the packages it will install.
+The packages shown will include a marker at the beginning of the line
+=           Package is installed, was installed as part of the group
++           Package isn't installed, will be if the group is installed or updated
+-           Package isn't installed, will not be if the group is installed or updated
+no marker   Package is installed, but was not installed through the group
+
+-----------------------------------------------
+yum [group install|groupinstall] "[group name]"
+-----------------------------------------------
+Install a group with all it's packages
+
+The behavior of yum groups has changed in RHEL 7 from RHEL 6 and earlier.
+RHEL 7 treats groups as objects and they're tracked by the system.
+If an installed group is updated, and new mandatory or default packages have been added to the group by the yum repository, those new packages will be installed on update. Only "installed" if the yum group install command was used.
+-------------------------------------
+yum group mark install "[group name]"
+-------------------------------------
+mark a group as installed. Any missing packages will be installed on the next update.
+
+RHEL 6 and earlier consider a group to be installed if all its mandatory packages have been installed; or if it had no mandatory packages, if any default or optional packages in the group are installed.
+Also, RHEL 6 didn't had two words commands. yum group list wasn't available but yum grouplist did.
+
+Viewing transaction history
+All install and remove transactions are logged in /var/log/yum.log
+-----------
+yum history
+-----------
+Summary of install and remove transactions
+--------------------
+yum history undo [x]
+--------------------
+Reverse the x amount of transactions
+
+Enabling yum software repositories
+
+----------------
+yum repolist all
+----------------
+See list of repositories. Enabled or disabled.
+
+----------------------------------------
+yum-config-manager --enable [repository]
+----------------------------------------
+Enables the specified repository
+
+You can add repositories by adding their file in the /etc/yum.repos.d/ directory.
+Repository configuration files must end in .repo.
+The repository definition contains the URL of the repository, a name, wheter to use GPG to check the package signatures, and if so, the URL pointin to the trusted GPG key.
+
+------------------------------------------------
+yum-config-manager --add-repo="[repository URL]"
+------------------------------------------------
+Adds the specified repository URL to the list of repositories. It will create the appropiate configuration file for that repository
+------------------------------------------------------
+[EPEL]
+name=EPEL 7
+baseurl=http://dl.fedoraproject.org/pub/epel/7/x86_64/
+enabled=1    // if it's a 0, the repository is defined but not searched by default
+gpgcheck=1   // check the key when you grab or install a package from that repository
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7   // where is the key located
+------------------------------------------------------
+Administrators should download the GPG key rather than allowing yum to retrieve the key from an external source.
+
+RPM configuration package for the repository
+---------------------------
+yum localinstall [RPM file]
+---------------------------
+Installs the specified RPM file.
+
+What if we want to install an RPM package from a website?
+--------------------------------------------------------------------
+rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+--------------------------------------------------------------------
+First we import the GPG key from the repository
+------------------------------------------------------------
+yum install [repositoryURL/package-version-release-arch.rpm]
+------------------------------------------------------------
+Then we install the RPM file that is hosted on the repository
+
+Configuration files often list multiple repository references in a single file. Each repository reference begins with a single-word name in square brackets.
+
+Install the RPM GPG key before installing signed packages. Otherwise, yum will complain about the missing key.
+----------------------------------
+yum install --nogpgcheck [package]
+----------------------------------
+yum won't check the GPG signature
+
+Examining RPM package files
+
+-------------------------------------------------
+rpm [-q|--query] [select-options] [query-options]
+-------------------------------------------------
+Get information about the package
+
+----------
+rpm -q yum
+----------
+Display information about the rpm package for yum
+
+-----------------------
+rpm -q -p [package].rpm
+-----------------------
+Display information about the RPM file specified.
+
+---------------------
+rpm -q -f [file name]
+---------------------
+What package provides [file name]
+
+-q    = yum list
+-q -i = yum info
+-------------------
+rpm -q -l [package]
+-------------------
+List of files installed by the specified package
+
+-------------------
+rpm -q -c [package]
+-------------------
+List of configuration files
+
+-------------------
+rpm -q -d [package]
+-------------------
+List of documentation files
+
+--------------------------
+rpm -q --scripts [package]
+--------------------------
+List of scripts that may run before or after the package is installed or remove.
+It shows the text and syntax of the embedded scripts
+
+----------------------------
+rpm -q --changelog [package]
+----------------------------
+Shows the changelog of the specified package
+
+-------------------------------------
+wget [repository URL]/[package].rpm
+rpm -q -l -p [package downloaded].rpm
+-------------------------------------
+Query a package
+
+The command  repoquery  does the same but it differs from rpm by looking up the information in yum's repositories instead of the local database of installed packages.
+
+Extracting files from RPM packages
+Files in the RPM package can be extracted without installing the package using cpio.
+
+----------------------------------------
+rpm2cpio [package].rpm | cpio -id "*txt"
+----------------------------------------
+Extract the content of the RPM packages by piping the output of rpm2cpio to cpio
+Subdirectories will be created as needed, relative to the current working directory.
+
+#filesystem
+
+A file system is an organization structure that looks like a tree.
+Under normal circunstances, your hard drive is divided on partitions, where we put filesystems.
+Partitions should be only for boot disks.
+Nowadays, almost all disks use the SCSI (Small Computer System Interface) driver protocols and show up as SD devices
+/dev/sd[a,b,c] - a for the first disk, b for the second, c for the third
+/dev/vd[a,b,c] - virtual disk
+
+A long listing of the /dev/vda will show that it has a "b" on the type of file.
+
+The other way to organize disks instead of creating small partitions is taking many disks and combine them into bigger structures.
+Logical Volume Management (LVM).
+A logical volume is the equivalent of a partition residing on a physical disk.
+Both the volume group and the logical volume have names assigned upon creation.
+For the volume group, a directory with the same name as the volume group exists in the /dev directory.
+Inside that directory, a symbolic link with the same name as the logical volume has been created.
+The device file representing the mylv logical volume in the myvg volume group is /dev/myvg/mylv
+
+The naming is maintained by a kernel driver that's known as Device Mapper.
+Each logical volume also has a Device Mapper number created for each device constructed. /dev/dm-number
+
+--
+df
+--
+Display the file system that is currently mounted.
+Every filesystem needs to be mounted.
+-----
+df -h
+-----
+Filesystems with space on human readable format.
+
+-------
+du [-h]
+-------
+Short of disk usage. Useful to see how much space something takes.
+For directories, the size is the amount of files inside of it PLUS the size that takes the directory itself.
+
+Quiz:
+
+/dev/sdc                      The device file of a SATA hard drive residing in /dev
+/dev/sda2                     The device file of the second partition on the first SATA hard drive in /dev
+/dev/vg_install/lv_home       The device file of a logical volume in /dev
+/dev/vdb                      The device file of the second disk in a virtual machine in /dev
+/dev/sdb3                     The device file of the third partition on the second SATA hard drive in /dev
+/dev/vdb3                     The device file of the third partition on the second disk in a virtual machine in /dev
+
+Mounting and unmounting file systems
+
+For manually mount devices we use the  mount  command, the name of the device to mount and a directory for it.
+You can specify the device in one of two different ways:
+- The device file of the partition holding the file system, residing in /dev
+- The UUID, a universal unique identifier of the file system
+
+It's possible that devices may be renumbered because they're numbered and named in order as they're found when the system boots.
+Each partition/filesystem has a generated UUID that won't change.
+
+-----
+blkid
+-----
+Shows all filesystems with their corresponding UUID
+
+------------------------------------------------------------------------------
+mount [/dev/device|UUID="uuid of the device"] [/mnt/mydata|/path/to/directory]
+------------------------------------------------------------------------------
+Mount a file system.
+
+Most of the time, it's configured permanently into the /etc/fstab file
+If the directory acting as mount point isn't empty, the files that exists in that directory won't be accessible as long as the file system is mounted there.
+All file written to the mount point directory end up on the file system mounted there.
+
+-----------------------------
+umount [/path/to/mount/point]
+-----------------------------
+Unmounts the file system mounted at that point.
+If the mount point is accessed by a process, you can't unmount it
+
+-------------------------
+lsof [/path/to/directory]
+-------------------------
+LiSt Open Files.
+Shows the processes that are using the specified directory/file.
+
+Accessing removable storage devices
+Removable media, such as USB flash devices and drives, get automatically mounted by the system.
+The mount point for the removable medium is
+/run/media/<user>/<label>
+
+To safely remove USB media from the system, it is required to unmount it before physically removing it from the USB slot to synchronize the file system.
+Removing without unmounting the file system on it can result in data loss.
+Back in RHEL 5 and 6, the /media directory was used.
+
+Making links between files
+
+The idea is to create another name for the same file, like a nickname.
+Having more than one name and still point to the same file.
+Every file has a unique inode number. Each file has data blocks that refer to the inode table that has the other information about the file.
+There's an inode entry that gives the parameters of the metadata about a file, who owns it, what permissions, etc.
+
+When you use a file, we're calling that inode entry and getting the data from there.
+A link calls that same inode entry.
+
+Hard links are directory entries/names of file that point back to the same construction of a single file.
+Hard links can't be made across file systems.
+ls -l shows the hard link count (number of names) after the permissions and before the owner of the file
+
+-------------------------------
+ln [/path/to/a] [/path/where/b]
+-------------------------------
+Make another name for a file.
+When you create a link, you know that A exists and you're creating a new name for A called B.
+When you delete A, B still exists and has A content.
+If you modify B, both A and B will be modified.
+
+Symbolic links (a.k.a soft links) 
+-------------------------------
+ln -s [/path/to/x] [/path/to/y]
+-------------------------------
+Doing an ls -l will show what's the real file.
+When opening a symbolic link, it will reference to the real file and that's it.
+Symbolic links are the only way to get across the file system boundaries.
+
+Locating files on the system
+
+You can search files not only by name but also by owner, when they were created, date and timestamps, size, etc.
+
+Using  locate
+--------------------
+locate [search term]
+--------------------
+Searchs every file that contains the search term on it's name.
+
+-----------------------
+locate -i [search term]
+-----------------------
+Performs a case-insensitive search.
+
+---------------------------
+locate -n [X] [search term]
+---------------------------
+Search and stops after reaching X results.
+
+locate is very fast but how does it works?
+Well, locate has it's own database.
+--------
+updatedb
+--------
+Update locate database
+
+Using  find
+While locate is faster because the searchs are made on a database structure, find is slower because it searchs in real time, also high disk intensive.
+
+------------------------------------------------
+find [directory to start] -name [name to search]
+------------------------------------------------
+Searchs by name (-iname for insensitive search). We can use wildcard on the name to search
+When you're using wildcard, it's important to surround the text with 'single quotes', otherwise it will expand to the first file that matches it.
+
+----------------------------------------------------------------
+find [-user|-group|-uid|-gid] [username|group|user id| group id]
+----------------------------------------------------------------
+Searchs all the files owned by the user|group specified.
+-----------------------------
+find / -user root -group mail 
+-----------------------------
+Searchs for the files owned by root and group mail
+
+You can also search for files by their permissions!
+--------------------
+find /home -perm 764
+--------------------
+Search all files in /home that have permissions -rwxrw-r--
+---------------------
+find /home -perm -324
+---------------------
+Search for all the files in /home that have AT LEAST --wx-w-r--
+---------------------
+find /home -perm /442
+---------------------
+Search for all the files where the owner has read and write permissions, OR the group has read and write permissions, OR the world/others has write permissions.
+Using a zero (0) means that we don't care about those permissions
+---------------
+find -perm -004
+---------------
+We're looking for files where world/others have at least read permission. We don't care about owner or group permissions.
+
+---------------------
+find -size [X][k|M|G]
+---------------------
+Search for files that have exactly the size of X[k|M|G] (e.g 10k - kilobytes, 10M - megabytes, 10G - gigabytes).
+---------------
+find -size +10M
+---------------
+Search for files with a size more than 10 megabytes.
+---------------
+find -size -10M
+---------------
+Search for files with a size less than 10 megabytes.
+-size unit modifies round up to single units (995kb = 1M)
+
+----------------
+find / -mmin [X]
+----------------
+Search for files which modification happened X minutes ago.
+Same as -size, we can add +/-
+
+-----------------
+find /etc -type d
+-----------------
+Search on the /etc directory for all the files that are directories (d)
+f   regular file
+d   directory
+l   soft/symbolic link
+b   block device
+
+------------------------
+find / -type f -links +1
+------------------------
+Search all regular files (-type f) that have at least two names (more than 1 hard link).
+
+#virtualize
+
+Managing a local virtualization host
+
+Virtual machines are the backbone of the cloud
+
+KVM = Kernel Virtual Machine
+Built into the kernel, the capability of understanding how to manage virtual machines.
+A host is a machine designed to support the running of virtual guests.
+Virtual guests are those KVM instances built on top to be additional machines.
+
+The KVM hypervisor in RHEL is managed with the libvirt API and utilities, such as virt-manager and virsh
+RHEV - finely tuned virtualization host for guests.
+RHEV Manager for managing the RHEV-H instances.
+CloudForms was made to manage OpenStack and other types of cloud instances
+
+- Physical legacy system, you can create virtual machines, many as you want, only limited by the hardware.
+- Red Hat Enterprise Virtualization (RHEV), supports KVM instances across multiple RHEV-H (hypervisor), providing KVM migration redundancy.
+- RHEL OpenStack platform, Red Hat private cloud architecture using integrated and tuned OpenStack on a RHEL foundation with KVM, managed either by the Red Hat OpenStack Dashboard (Horizon component) or by Red Hat CloudForms.
+- OpenStack in public cloud, architecture implemented at Red Hat Certified CLoud Providers, and managed by either the OpenStack Horizon component or by Red Hat CloudForms.
+- Hybrid Cloud, Red Hat CloudForm cloud management utilities manage and migrate KVM instances across Red Hat RHEV and OpenStack architectures, and transition KVM instances with third-party OpenStack and VMware platforms.
+
+Configure a RHEL physical system as a virtualization host
+
+Recommended system requirements:
+- One processor core or hyperthread for each gues virtual machine and one for the host
+- 2 GB of RAM, plus additional RAM for virtual machines.
+- 6 GB disk space for the host, plus the required disk space for each virtual machine.
+
+---------
+virt-what
+---------
+Am I inside of the Matrix?
+Basically, tells you if you're using a virtual machine or not.
+
+---------------------------------------
+grep --color -E "vmx|svm" /proc/cpuinfo
+---------------------------------------
+Checks if the current CPU supports Hyperthreading/VT-X (Intel) or SVM/AMD-X (AMD)
+
+The No eXecute (NX) feature, called eXecute Disable (XD) by Intel and Enhanced Virus Protection by AMD, is not necessary for building a host on RHEL, but is required for a RHEV-H.
+----------------------------------
+grep --color -E "nx" /proc/cpuinfo
+----------------------------------
+Checks for NX/XD
+
+-----------------------------
+yum install qemu-kvm qemu-img
+-----------------------------
+We need these packages for virtualization.
+
+------------------------------------------------------------------------------
+yum install virt-manager libvirt libvirt-python python-virtinst libvirt-client
+------------------------------------------------------------------------------
+We also need these packages for building guests, managing guests and talking to guests.
+
+During an installation using Anaconda, we can choose an environment as Virtualization Host and choose Virtualization Platform on the Add-Ons side.
+
+Managing virtual machines
+
+The libvirt package is a hypervisor-independent virtualization API to securely manage virtual machines by providing the ability to provision, create, modify, monitor, control, migrate, and stop virtual machines on a single host.
+The libvirt package also provides APIs to enumerate, monitor, and use the resources available on the managed host, including CPUs, memory, storage and networking.
+Management tools utilizing libvirt can access host systems remotely using secure protocols.
+
+virsh - command-line tool alternative to the graphical virt-manager application. Users without privileges can only use virsh in read-only mode, or with root access for full administrative functionality. Ideal for scripting virtualization administration.
+
+virt-manager - graphical desktop tool that allows access to guest consoles and is used to perform virtual machine creation, migration, configuration and administrative tasks. Both local and remote hypervisors can be managed through a single interface.
+
+RHEV-M - provides a central management platform for physical and virtual resources, allowing virtual machines to be started, stopped, built, and migrated between hosts. Also manages the storage and the network components of a data center and provides secure, remote graphical guest console access.
+
+----------
+virsh list
+----------
+Show a list with all the virtual machines and their states
+
+-------------------------------------------
+virsh destroy [virtual machine]
+-------------------------------------------
+Stop a virtual machine (yeah, destroy sounds like another thing) by destroying the instance of it.
+
+-----------------------------
+virsh start [virtual machine]
+-----------------------------
+Starts an instance of a virtual machine
+
+More commands for virsh
+
+connect       connect to a local or remote KVM host using qemu:///host syntax. (connect from one virtualization host to another one)
+nodeinfo      returns basic information about the host, including CPUs and memory
+autostart     configures a KVM domain to start when the host boots
+console       connect to the virtual serial console of a guest (log into the virtual machine)
+create        create a domain from an XML configuration file and start it
+define        create a domain from an XML configuration file, but do not start it
+undefine      undefine a domain. If the domain is active, the domain configuration is removed
+edit          edit the XML configuration file for a domain, which will affect the next boot of the guest
+reboot        reboot the domain, as if the reboot command had been run from inside the guest
+shutdown      shutsdown the domain, as if the shutdown command had been run from inside the guest
+screenshot    takes a screenshot of the current domain console and stores it in a file
+
+Quiz:
+
+start         Boot an existing configured virtual machine
+destroy       Immediately stop a virtual machine, similar to unplugging it
+undefine      Delete the configuration for a virtual machine permanently
+create        Use an XML configuration to create and boot a virtual machine
+define        Use an XML configuration to create a virtual machine
+reboot        Gracefully stop and restart a virtual machine
+shutdown      Gracefully stop a virtual machine
+
+Installing a new virtual machine
+
+When you're using the GUI tool to install a new virtual machine, you have to choose the name for it (just how it will be displayed)
+Then the install method (local media, network install, network boot).
+Depending on what method you choose, write where's the media located.
+It asks how much RAM and how many CPUs we want to give to the virtual machine.
+Next, we need to give it a disk. Create a virtual disk.
+We can set to share the physical network device and KVM will automatically create a bridge to attach to the device. Also, we can use a fixed MAC address.
+
+If we check "Customize configuration before install", it will show a window with more options before starting with the actual installation.
+
+Once the installation begins, the installation program ends up opening a number of log files that you can watch while the system is actually installing.
+
+Console     Keyboard shortcut   Contents
+1           Ctrl + Alt + F1     Main installer console, contains debugging information from anaconda
+2           Ctrl + Alt + F2     Shell prompt with root access, contains a stored history of useful commands
+3           Ctrl + Alt + F3     Installation log, displays messages stored in /tmp/anaconda.log
+4           Ctrl + Alt + F4     Storage log, displays messages on related storage devices from kernel and system services, stored in /tmp/storage.log
+5           Ctrl + Alt + F5     Program log, displays messages from other system utilities, stored in /tmp/program.log
+6           Ctrl + Alt + F6     Spare shell prompt
+7           Ctrl + Alt + F7     The default console with GUI
+
+You can't continue the installation unless you set a root password and check the disk partitions.
+
+On the first boot, there are some questions and configurations like Red Hat registration and that stuff and user creation.
+
+Quiz:
+
+7         Name the virtual machine and select an installation source.
+1         Provide the source location and operating system type
+5         Enter the Memory and CPU settings
+4         Configure storage for this virtual machine
+9         Configure networking options for the installation
+2         Modify Localization paramaters for Date and Time, Language and Keyboard
+8         Select the Software to be installed
+3         Provide System paramters for disk partitioning, networking and hostname
+6         Provide User Settings for a root password and a non-root account
+
+Yeah, another quiz:
+
+Red Hat Enterprise Linux                Single system hardware providing KVM support
+Red Hat Enterprise Virtualization       Multiple system hardware providing virtualized redundancy
+RHEL OpenStack platform                 Multiple system hardware providing private cloud
+OpenStack in public cloud               Cloud provider providing public cloud
+virt-manager                            Management utility for standalone KVM hosts
+RHEV-M                                  Management utility for multiple host virtualization platform
+CloudForms                              Management utility for all virtualization and cloud platforms combined
