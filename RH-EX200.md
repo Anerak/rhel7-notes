@@ -87,3 +87,27 @@ Option|Description
 -m|minimum age/time before changing the password
 -M|maximum age of the password
 -W|warning before the password expiration date
+
+## Permissions
+
+### Word model
+
+**`chmod`**&nbsp;`WhoWhatWhich <filename>`
+
+**r** read, **w** write, **x** execute.
+
+**`chmod`**&nbsp;`g=rw- foo` sets read and write for the group of the file _foo_.
+
+**`chmod`**&nbsp;`u+x script` adds the execute permission for the owner of the file _script_
+
+### Shared table for the World model
+
+Word|Operator|Permission|Special bit
+-|-|-|-
+u (owner)|+ (add permission)|r (read)|s (setuid, using u)
+g (group)|- (remove permission)|w (write)|s (setgid, using g)
+o (other)|= (set permission)|x (execute)|t (sticky, only directories)
+
+### Octal model
+
+**4** read, **2** write, **1** execute.
