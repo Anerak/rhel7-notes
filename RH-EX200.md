@@ -10,8 +10,8 @@ l   | Extended output (equivalent to command ll)|< \<filename>|uses file as stdi
 ld  | Directory output|>|stodout overwrites file
 a   | Shows all files, even hidden ones|>>|sdtout appends to file
 Z   | SELinux context|2> \<filename>|stderr to file
-|-|-|2>1|stderr to stdout
-|-|-|&>\<filename>|stdout and stderr to file name
+R|Recursive|2>1|stderr to stdout
+|-|-|&> \<filename>|stdout and stderr to file name
 
 ## Users
 
@@ -30,6 +30,8 @@ Z   | SELinux context|2> \<filename>|stderr to file
 **`userdel`**&nbsp;`[username]` (add -r to remove the home directory)
 
 **`usermod`**&nbsp;`[username]`
+
+**`usermod`**&nbsp;`-s /sbin/nologin [username]` the user won't be able to log in.
 
 Most of these options works for **`useradd`** and **`usermod`**
 
@@ -68,3 +70,20 @@ time|------------------------------------------------|----------------------|
     |                                                |                      |
 last change date (-d)                     password expiration date      inactive date
 ```
+
+**`chage`**&nbsp;&nbsp;`-l [username]` list user's current settings.
+
+**`chage`**&nbsp;&nbsp;`-E YYYY-MM-DD [username]` makes the account expire n the specified date.
+
+**`chage`**&nbsp;&nbsp;`-d 0 [username]` forces a password change on the next login.
+
+**`chage`**&nbsp;&nbsp;`-m 0 -M 90 -W 7 -I 14 [username]` change the settings to 0 days required to change password,  90 days for the password to expire, warning of password expiring 7 days before it happens, 14 days before the account inactivation.
+
+Option|Description
+-|-
+-d|change the last time the password was changed
+-E|set date (YYYY-MM-DD) of account's expiration
+-I|days before the password becomes inactive
+-m|minimum age/time before changing the password
+-M|maximum age of the password
+-W|warning before the password expiration date

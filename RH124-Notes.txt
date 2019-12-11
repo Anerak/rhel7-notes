@@ -473,7 +473,7 @@ The time is 26 minutes past 11AM.
 
 What if we need to protect characters? Escape them
 Surround it with double quotes "**********hostname************"
-"$(this stilll happens inside double quotes)"
+"$(this still happens inside double quotes)"
 
 You can also put a back slash \ in front of a character that you want to print.
 \$USER
