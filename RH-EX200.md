@@ -2,6 +2,8 @@
 
 ## **`ls`** & **`redirect symbols`**
 
+### Why two different things share a table? Because I'm trying to save space
+
 ls option|Description|Redirect Symbol|Description
 -|-|-|-
 l   | Extended output (equivalent to command ll)|< \<filename>|uses file as stdin
