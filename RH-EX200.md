@@ -1,19 +1,23 @@
 # Resume
 
+Most of the stuff here comes from the .txt with notes. There are some cases where I copied the information from the man pages or Internet.
+
+Some sections like **`vim`** aren't present due printing reasons (paper and ink are expensive).
+
 ## **`ls`** & **`redirect symbols`**
 
 ### Why two different things share a table? Because I'm trying to save space
 
 ls option|Description|Redirect Symbol|Description
 -|-|-|-
-l   | Extended output (equivalent to command ll)|< \<filename>|uses file as stdin
+l   | Extended output|< \<filename>|uses file as stdin
 ld  | Directory output|>|stodout overwrites file
 a   | Shows all files, even hidden ones|>>|sdtout appends to file
 Z   | SELinux context|2> \<filename>|stderr to file
 R|Recursive|2>1|stderr to stdout
-|-|-|&> \<filename>|stdout and stderr to file name
+&nbsp;|&nbsp;|&> \<filename>|stdout and stderr to file name
 
-## Users
+## **Users**
 
 `/etc/passwd` contains the local user information.
 
@@ -49,7 +53,7 @@ Option|Description
 -L, --lock|lock the user's account
 -U, --unlock|unlock the user's account
 
-## Groups
+## **Groups**
 
 **`groupadd`**&nbsp;&nbsp;`-g [GID] [group]` adds a group with the specified ID and name.
 
@@ -59,16 +63,16 @@ Option|Description
 
 **`gpasswd`**&nbsp;&nbsp;`-d [user][group]` remove the user from the group.
 
-## Password
+## **Password**
 
 ```none
-    ||------------------max days (-M)---------------||
-    |                   |       |                    |
-    |                   |       |                    |
-    ||---min days (-m)--|       |--warn days (-w)---|||--inactive days (-I)-|
-time|------------------------------------------------|----------------------|
-    |                                                |                      |
-last change date (-d)                     password expiration date      inactive date
+    ||--------------max days (-M)------------||
+    |                |      |                 |
+    |                |      |                 |
+    ||-min days (-m)-|      |-warn days (-w)-|||-inactive days (-I)-|
+time|-----------------------------------------|---------------------|
+    |                                         |                     |
+last change date (-d)             password expiration date      inactive date
 ```
 
 **`chage`**&nbsp;&nbsp;`-l [username]` list user's current settings.
@@ -88,7 +92,7 @@ Option|Description
 -M|maximum age of the password
 -W|warning before the password expiration date
 
-## Permissions
+## **Permissions**
 
 ### Word model
 
@@ -100,14 +104,165 @@ Option|Description
 
 **`chmod`**&nbsp;`u+x script` adds the execute permission for the owner of the file _script_
 
-### Shared table for the World model
+### Shared table for the Word model
 
 Word|Operator|Permission|Special bit
 -|-|-|-
-u (owner)|+ (add permission)|r (read)|s (setuid, using u)
-g (group)|- (remove permission)|w (write)|s (setgid, using g)
+u (owner)|+ (add permission)|r (read)|s (suid, using u)
+g (group)|- (remove permission)|w (write)|s (sgid, using g)
 o (other)|= (set permission)|x (execute)|t (sticky, only directories)
 
-### Octal model
+### Numeric model
 
-**4** read, **2** write, **1** execute.
+Number|Permission|Special bit
+-|-|-
+4|read|suid
+2|write|sgid
+1|execute|sticky
+
+**`chmod`**&nbsp;`0700 foo` equivalent to `-rwx------`
+
+**`chmod`**&nbsp;`4554 script` equivalent to `-r-sr-xr--`
+
+**`chmod`** supports `-R` for recursive operations.
+
+**`chown`**&nbsp;`[user]:[group]` change file ownership.
+  
+### **`umask`**
+
+Change the default permissions applied to a new created file/directory using **`umask`**.
+
+Write the value for the permissions excluded.
+
+**`umask`**&nbsp;`0022` new files will be created as `-rwxr--r--` and `drwxr--r--`.
+
+## **Processes**
+
+**`ps`**&nbsp;`aux` processes with `USER PID %CPU %MEM TTY STATUS`.
+
+**`ps`**&nbsp;`lax` long listing style, avoid username lookup.
+
+**`ps`**&nbsp;`-ef` display all processes.
+
+**`ps`**&nbsp;`j` jobs running.
+
+### Process status
+
+Name|Flag|Kernel state|Description
+-|-|-|-
+Running|R|TASK_RUNNING|executing on a CPU or waiting to run
+Sleeping|S|TASK_INTERRUPTIBLE|waiting for some condition (hw request, resources, signal)
+&nbsp;|D|TASK_UNINTERRUPTIBLE|sleeping but won't respond to signals
+&nbsp;|K|TASK_KILLABLE|like D but waiting for a signal to be killed
+Stopped|T|TASK_STOPPED|stopped by being signaled (by user or another process)
+Zombie|Z|EXIT_ZOMBIE|child process signals it's parent as it exists. Free resources
+&nbsp;|X|EXIT_DEAD|parent reaps the remaining child process structure. Now free
+
+### Jobs
+
+Useful when you have access to only ONE terminal.
+
+**`[command]`**&nbsp;`&` the ampersand moves the program to the background automatically.
+
+**`jobs`** display running jobs on the background.
+
+**`fg`**&nbsp;`%[job ID]` bring job to the foreground.
+
+**`bg`**&nbsp;`%[job ID]` resume stopped process in the background.
+
+**`Ctrl + Z`** suspends the process and send it to the background (use before **`bg`**).
+
+**`kill`**&nbsp;`%[job ID]` kill the job running in the background.
+
+### **`kill`** command
+
+**`man`**&nbsp;`7 signal` for more details.
+
+Number|Name|Definition|Purpose
+-|-|-|-
+1|SIGHUP|Hangup|report termination of the controlling process of a terminal
+2|SIGINT|Keyboard interrupt|interrupt from keyboard (**`Ctrl + C`**)
+3|SIGQUIT|Keyboard quit|quit from keyboard (**`Ctrl + \`**)
+9|SIGKILL|Kill, unblockable|abrupt program termination. Always fatal
+15|SIGTERM|Terminate|termination signal, process should close properly
+18|SIGCONT|Continue|resume process if stopped
+19|SIGSTOP|Stop, unblockable|suspend the process
+20|SIGTSTP|Keyboard stop|can be blocked or handled (**`Ctrl + Z`**)
+
+**`kill`**&nbsp;`[PID]` kill the process with the default signal (SIGTERM,15).
+
+**`kill`**&nbsp;&nbsp;`-[signal] [PID]` send the specified signal (name or number).
+
+**`kill`**&nbsp;&nbsp;`-l` list all the available signals.
+
+**`killall`**&nbsp;`[command pattern]` kill all the processes that matches the command pattern.
+
+**`killall`**&nbsp;&nbsp;`-[signal] [command pattern]` send the specified signal to all the process that matches the command pattern.
+
+**`killall`**&nbsp;&nbsp;`-[signal] -u [username] [command]` same as before but only those that belong to the specified user.
+
+### **`pkill`** command
+
+It's like killall, and uses an advanced selection criteria.
+
+#### Use **`pgrep`** to check which processes will be affected
+
+Option|Name|Description
+-|-|-
+\[command]|Command|processes matching that command
+-U|User ID|processes owned by that user
+-G|Group ID|processes owned by that group
+-P|Parent|processes belonging to that parent process
+-t|Terminal|processes controlled by that terminal
+
+**`pkill`**&nbsp;`[command pattern]`
+
+**`pkill`**&nbsp;&nbsp;`-U 1000` kill all the processes that belong to the user with ID 1000.
+
+**`pgrep`**&nbsp;&nbsp;`-l -u foo` display all the processes running by the user `foo`
+
+**`w`**&nbsp;&nbsp;`-f` display who's logged into the system and their activities.
+
+**`pstree`**&nbsp;&nbsp;`-p [username]` tree representation of the processes running by the specified user.
+
+### Process activity
+
+**`uptime`** display the load average of the last 1, 5 and 15 minutes.
+
+**`grep`**&nbsp;`"model name" /proc/cpuinfo |`&nbsp;**`wc -l`** Count the cores of the machine (both physical and hyperthread ones).
+
+Divide each number by the amount of cores. If the result is greater than 1 (>1), the CPU is overloaded.
+
+**`top`** real-time process monitoring
+
+#### List of columns
+
+Name|Description
+-|-
+USER|process owner
+VIRT|virtual memory is all the memory that the process is using
+RES|physical memory used by the process
+S|process state.
+&nbsp;|\[D] uninterruptable sleeping  \[R] Running or Runnable
+&nbsp;|\[S] Sleeping \[T] Stopped or Traced \[Z] Zombie
+TIME|total processing time since the process started
+COMMAND|process command name
+
+#### Keystrokes
+
+Key|Purpose
+-|-
+?  \/ h|help for interactive keystrokes
+l t m|toggles for load, threads and memory header lines
+1|toggle showing individual CPUs or a summary in header
+s|refresh rate in decimal seconds (0.5,1,5)
+b|reverse highlighting for Running processes; default = bold
+B|enables use of bold in display
+H|toggle threads
+u,U|filter for username
+M|sort by memory usage
+P|sort by processor utilization
+k|kill a process, ask for PID and signal
+r|renice a process, ask for PID and nice_value
+W|save the current display configuration for the next restart
+q|quit
