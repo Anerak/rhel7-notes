@@ -1712,7 +1712,7 @@ killall -[signal] -u [username] [command pattern]
 Sends the specified signal to the process that matches the specified pattern and belongs to the user, also specified...
 
 
-pkill  is like  killal
+pkill  is like  killall
 Can signal multiple processes using an advanced selection criteria which can include:
 Command     processes with a pattern-matched command name
 UID         processes owned by a Linux user account, effective or real
