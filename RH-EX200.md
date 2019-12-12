@@ -146,7 +146,7 @@ Write the value for the permissions excluded.
 
 **`ps`**&nbsp;`j` jobs running.
 
-### Process status
+### **Process status**
 
 Name|Flag|Kernel state|Description
 -|-|-|-
@@ -158,7 +158,7 @@ Stopped|T|TASK_STOPPED|stopped by being signaled (by user or another process)
 Zombie|Z|EXIT_ZOMBIE|child process signals it's parent as it exists. Free resources
 &nbsp;|X|EXIT_DEAD|parent reaps the remaining child process structure. Now free
 
-### Jobs
+### **Jobs**
 
 Useful when you have access to only ONE terminal.
 
@@ -174,7 +174,7 @@ Useful when you have access to only ONE terminal.
 
 **`kill`**&nbsp;`%[job ID]` kill the job running in the background.
 
-### **`kill`** command
+### **`kill` command**
 
 **`man`**&nbsp;`7 signal` for more details.
 
@@ -201,7 +201,7 @@ Number|Name|Definition|Purpose
 
 **`killall`**&nbsp;&nbsp;`-[signal] -u [username] [command]` same as before but only those that belong to the specified user.
 
-### **`pkill`** command
+### **`pkill` command**
 
 It's like killall, and uses an advanced selection criteria.
 
@@ -225,7 +225,7 @@ Option|Name|Description
 
 **`pstree`**&nbsp;&nbsp;`-p [username]` tree representation of the processes running by the specified user.
 
-### Process activity
+### **Process activity**
 
 **`uptime`** display the load average of the last 1, 5 and 15 minutes.
 
@@ -266,3 +266,17 @@ k|kill a process, ask for PID and signal
 r|renice a process, ask for PID and nice_value
 W|save the current display configuration for the next restart
 q|quit
+
+### **`nice` & `renice`**
+
+Nice levels of a process goes from -20 to 19 for users.
+
+**`top`** displays them from RT,-99 to 39.
+
+Nice level of 20 for users translates as 0 for **`top`**.
+
+Use **`nice`** for run programs, **`renice`** for already running programs.
+
+**`nice`**&nbsp;&nbsp;`-n [nice level] [command]` run the program with the specified nice level.
+
+**`renice`**&nbsp;&nbsp;`-n [nice level] [PID]` renice the process that is already running.
