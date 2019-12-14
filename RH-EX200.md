@@ -2,7 +2,7 @@
 
 Most of the stuff here comes from the .txt with notes. There are some cases where I copied the information from the man pages or Internet.
 
-Some sections like **`vim`** aren't present due printing reasons (paper and ink are expensive).
+Some sections like **`vim`** or **`kickstart`** aren't present due printing reasons (paper and ink are expensive).
 
 ## **`ls` & `redirect symbols`**
 
@@ -17,6 +17,26 @@ Z   | SELinux context|2> \<filename>|stderr to file
 R|Recursive|2>1|stderr to stdout
 &nbsp;|&nbsp;|&> \<filename>|stdout and stderr to file name
 
+## **`touch` command**
+
+Create files if they don't exist, otherwise, modify the timestamp.
+
+**`touch`**&nbsp;`foo` creates the file `foo`
+
+## **`ln` command**
+
+The purpose of **`ln`** is create another name for a file. Reference the same contents of the file but with another name.
+
+If you delete a file with a hard link, the content will be available on the hard link.
+
+If you delete a file with a symbolic link, the symbolic link won't work.
+
+**`ln`**&nbsp;`[source] [name of the link]`
+
+**`ln`**&nbsp;`fileA fileB` creates a link where fileA is the original
+
+**`ln`**&nbsp;&nbsp;`-s fileA symfileB` creates a symbolic link
+
 ## **`grep` command**
 
 Option|Function
@@ -24,8 +44,8 @@ Option|Function
 -i|case insensitivity
 -v|lines without matches
 -r|recursive search
--A \[X]|display X of lines after the match
--B \[X]|display X of lines before the match
+-A `[n]`|display X of lines after the match
+-B `[n]`|display X of lines before the match
 -e|multiple RegEx can be supplied as OR
 -n|display line number
 
@@ -40,7 +60,7 @@ Symbol|Usage|Example|Applies for
 \.\*|zero to infinitely characters|c.*t|ct/cat/coat/culvert
 .\\{\\}|explicit multiplier|c.\\{2\\}|coat
 \\<&nbsp;\\>|word boundary|\\<ipsum\\>|Lorem ipsum et
-[]|options for a single character|c\[abc]t|cat/cbt/cct
+[ ]|options for a single character|c\[abc]t|cat/cbt/cct
 
 ## **`locate` & `find`**
 
@@ -60,7 +80,20 @@ Option|Function
 -uid|same as -user but with the UID
 -group|search files that belong to that group
 -gid|same as -group but with GID
--perm \[permissions]|
+-perm `[permissions]`|search for permissions based on the operator
+&nbsp;|764 only `-rwxrw-r--`
+&nbsp;|\-324  at least `--wx-w-r--`
+&nbsp;|/442 `u r--` OR `g r---` OR `o -w-`
+-size `[n][k|M|G]`|search by size (round up to single units 995 KiB = 1MiB)
+&nbsp;|\+10M more than 10 MiB
+&nbsp;|\-1G less than 1 GiB
+-mmin `[n]`|modified files since at least `[n]` minutes
+-type| `r` regular file, `d` directory, `l` symlinks, `b` block device
+-links|regular files with more names
+
+**`find`**&nbsp;&nbsp;`/home -user foo` find all the files that belong to `foo`
+
+**`find`**&nbsp;&nbsp;`/ -type l -links +3`
 
 ## **Users**
 
@@ -87,14 +120,14 @@ Most of these options works for **`useradd`** and **`usermod`**
 Option|Description
 -|-
 -a, --append|add the user to the supplementary group(s). use only with -G
--c, --comment \[COMMENT]| full name of the user for the GECOS field.
--d, --home \[HOME_DIR]|specify user's home directory
--e, --expiredate \[EXPIRE DATE]|date on which the user account will be disabled (YYYY-MM-DD)
--f, --inactive \[INACTIVE]|number of day after password expires until the account is disabled
--g, --gid \[GID]|specify primary group
--G, --groups \[GROUPS]|supplementary groups
+-c, --comment `[COMMENT]`| full name of the user for the GECOS field.
+-d, --home `[HOME_DIR]`|specify user's home directory
+-e, --expiredate `[EXPIRE DATE]`|date on which the user account will be disabled (YYYY-MM-DD)
+-f, --inactive `[INACTIVE]`|number of day after password expires until the account is disabled
+-g, --gid `[GID]`|specify primary group
+-G, --groups `[GROUPS]`|supplementary groups
 -m, --move-home|moves the user's home directory to a new location, use with -d
--s, --shell \[SHELL]|specify a new login shell for the user
+-s, --shell `[SHELL]`|specify a new login shell for the user
 -L, --lock|lock the user's account
 -U, --unlock|unlock the user's account
 
@@ -130,12 +163,12 @@ last change date (-d)             password expiration date      inactive date
 
 Option|Description
 -|-
--d|change the last time the password was changed
--E|set date (YYYY-MM-DD) of account's expiration
--I|days before the password becomes inactive
--m|minimum age/time before changing the password
--M|maximum age of the password
--W|warning before the password expiration date
+-d `[n]`|change the last time the password was changed
+-E `[YYYY-MM-DD]`|set date of account's expiration
+-I `[n]`|days before the password becomes inactive
+-m `[n]`|minimum age/time before changing the password
+-M `[n]`|maximum age of the password
+-W `[n]`|warning before the password expiration date
 
 ## **Permissions**
 
@@ -254,7 +287,7 @@ It's like killall, and uses an advanced selection criteria.
 
 Option|Name|Description
 -|-|-
-\[command]|Command|processes matching that command
+`[command]`|Command|processes matching that command
 -U|User ID|processes owned by that user
 -G|Group ID|processes owned by that group
 -P|Parent|processes belonging to that parent process
