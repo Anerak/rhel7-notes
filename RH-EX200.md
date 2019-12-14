@@ -84,7 +84,7 @@ Option|Function
 &nbsp;|764 only `-rwxrw-r--`
 &nbsp;|\-324  at least `--wx-w-r--`
 &nbsp;|/442 `u r--` OR `g r---` OR `o -w-`
--size `[n][k|M|G]`|search by size (round up to single units 995 KiB = 1MiB)
+-size `[n][k,M,G]`|search by size (round up to single units 995 KiB = 1MiB)
 &nbsp;|\+10M more than 10 MiB
 &nbsp;|\-1G less than 1 GiB
 -mmin `[n]`|modified files since at least `[n]` minutes
