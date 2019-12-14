@@ -4,7 +4,7 @@ Most of the stuff here comes from the .txt with notes. There are some cases wher
 
 Some sections like **`vim`** aren't present due printing reasons (paper and ink are expensive).
 
-## **`ls`** & **`redirect symbols`**
+## **`ls` & `redirect symbols`**
 
 ### Why two different things share a table? Because I'm trying to save space
 
@@ -16,6 +16,51 @@ a   | Shows all files, even hidden ones|>>|sdtout appends to file
 Z   | SELinux context|2> \<filename>|stderr to file
 R|Recursive|2>1|stderr to stdout
 &nbsp;|&nbsp;|&> \<filename>|stdout and stderr to file name
+
+## **`grep` command**
+
+Option|Function
+-|-
+-i|case insensitivity
+-v|lines without matches
+-r|recursive search
+-A \[X]|display X of lines after the match
+-B \[X]|display X of lines before the match
+-e|multiple RegEx can be supplied as OR
+-n|display line number
+
+### **RegEx**
+
+Symbol|Usage|Example|Applies for
+-|-|-|-
+\^|beginning of the line|^cat|category
+\$|end of the line|$dog|chilidog
+\.|wildcard single character|c.t|cat/cbt/cct
+\*|any amount of characters|c*t|cat/cbt/caaaaat
+\.\*|zero to infinitely characters|c.*t|ct/cat/coat/culvert
+.\\{\\}|explicit multiplier|c.\\{2\\}|coat
+\\<&nbsp;\\>|word boundary|\\<ipsum\\>|Lorem ipsum et
+[]|options for a single character|c\[abc]t|cat/cbt/cct
+
+## **`locate` & `find`**
+
+**`locate`**&nbsp;`[search term]` search every file with the search term on it's name.
+
+**`locate`**&nbsp;&nbsp;`-i [search term]` case insensitive.
+
+**`locate`**&nbsp;&nbsp;`-n [X] [search term]` search and stops after X results.
+
+**`updatedb`** update the locate database.
+
+**`find`**&nbsp;`[directory to start] [search term]`
+
+Option|Function
+-|-
+-user|search files that belong to that username
+-uid|same as -user but with the UID
+-group|search files that belong to that group
+-gid|same as -group but with GID
+-perm \[permissions]|
 
 ## **Users**
 
