@@ -1,7 +1,7 @@
 # Resume
 
 Most of the stuff here comes from the .txt with notes. There are some cases where I copied the information from the man pages or Internet.  
-Some sections like **`vim`** or **`kickstart`** aren't present due printing reasons (paper and ink are expensive).
+Some sections like **`vim`** or **`kickstart`** aren't present, others were reduced (in comparison to the original note files), due printing reasons (paper and ink are expensive).
 
 ## **`ls` & `redirect symbols`**
 
@@ -399,6 +399,8 @@ Use **`nice`** for run programs, **`renice`** for already running programs.
 
 **`systemctl`**&nbsp;`[option] [unit]`
 
+The most common units: `service`, `socket`, `path`. Some processes has different units (like the `cups` process)
+
 Option|Function|Option|Function
 -|-|-|-
 start|starts the unit|reload|reload the configuration of the unit (keep PID)
@@ -459,9 +461,16 @@ It's recommended to send the output to another file and review the changes befor
 
 ## **SELinux**
 
-`/etc/selinux/config`  
-**Recommended:** install the packages `policycoreutils-python selinux-policy-devel setroubleshoot-server`.  
-`selinux-policy-devel` adds useful man pages related to SELinux.  
+`/etc/selinux/config`
+
+### **Recommended packages**
+
+Package|Description
+-|-
+`policycoreutils-python`|adds the **`semanage`** command
+`selinux-policy-devel`|more man pages related to SELinux
+`setroubleshoot-server`|adds the **`sealert`**
+
 **`sepolicy`**&nbsp;&nbsp;`manpage -a -p /usr/local/man/man8` creates the SELinux man pages.
 
 Security Enhanced Linux (SELinux) is an additional layer of system security.  
@@ -474,10 +483,11 @@ If the process is not allowed to do certain action or use certain file, an alert
 
 By default, everything on Linux is denied. You can allow processes to do their stuff with policy rules.  
 There are three modes for SELinux:  
-
-- Enforcing: SELinux denies access to anything that doesn't have an explicity policty to allow a behaviour.
-- Permissive: used to troubleshoot issues. SELinux allow all interactions, even if there's no explicit rule, and it logs those interaction it would have denied in enforcing mode.
-- Disabled: turns off SELinux. You must reboot the system to disable SELinux entirely.
+Mode|Description
+-|-
+Enforcing|denies access to everything without explicit policies for that behaviour
+Permissing|used to troubleshoot. Allow any interaction and logs the ones that should be denied.
+Disabled|turns off SELinux. Requires a reboot to remove the labeling of SELinux.
 
 It's better to use permissive mode than disable SELinux. The kernel will automatically maintain SELinux file system labels as needed, avoiding the need of relabeling during the system reboot.
 
@@ -559,3 +569,89 @@ Even if we don't use extensions on UNIX, it's good to add `.tar` at the end of t
 **`tar`**&nbsp;`cJf /root/bar.tar.xz /etc/selinux` creates a xz archive.
 
 **`tar`**&nbsp;`xzf /root/foo.tar.gz` extracts the content of the archive.
+
+## **Logfiles**
+
+### **rsyslogd**
+
+\/var\/log|Description
+-|-
+messages|most syslog messages are logged here (except auth and email processing)
+secure|security and authentication-related messages and errors (permissions and stuff)
+maillog|mail server-related messages
+cron|periodically executed tasks
+boot.log|system startup-related messages (check first for troubleshooting boot problems)
+
+Every message comes from a facility with a level of priority
+
+Code|Priority|Severity|Code|Priority|Severity
+-|-|-|-|-|-
+0|emerg|system is unusable|4|warning|warning condition
+1|alert|action must be taken immediately|5|notice|normal but significant event
+2|crit|critical condition|6|info|informational event
+3|err|non-critical error condition|7|debug|debugging-level message
+
+**`man`**&nbsp;`1 logger` for more information.
+
+`/etc/rsyslog.conf` contains predefined rules.
+
+New rules must be created on files inside of `/etc/rsyslog.d` and end with `.conf`
+
+``auth.* /var/log/mostsecure.log`` all messages from the `auth` facility will be logged on `/var/log/mostsecure.log`.
+
+``*.info;mail.none;authpriv.none;cron.none /var/log/messages`` all the messages with priority above `info` (6) will be logged on `/var/log/messages`, except those that comes from the `mail`,`auth` and `cron` facilities.
+
+Syslog entries have a defined format based on `timestamp:host:process:message` (you can add your own format on `/etc/rsyslog.conf`).
+
+**`logger`**&nbsp;`-p [facility].[level] [message]` sends a fake message (useful to test configurations).
+
+### **`journalctl` command**
+
+Provided by **systemd**, writes the log on `/run` so it won't be saved by default.  
+`mkdir /var/log/journal` this will make **`journalctl`** logs persistent. Remember to assign the right permissions to this folder:  
+**`chown`**&nbsp;`root:systemd-journal /var/log/journal`  
+**`chmod`**&nbsp;`2755 /var/log/journal` equivalent to `rwxr-sr-x`.  
+Still won't be permanent, you need to change  the rotation time on `/etc/systemd/journald.conf`, then send the `USR1` signal to `systemd-journald`.
+
+**`journalctl`**&nbsp;&nbsp;`-n [n]` display `n` amount of lines.  
+**`journalctl`**&nbsp;&nbsp;`-p [priority name or number]` display the messages with the specified priority.
+
+**`journalctl`**&nbsp;&nbsp;`-f` real time output.
+
+**`journalctl`**&nbsp;`--since [date (today| YYYY-MM-DD HH:MM:SS)] --until [date (today) | YYYY-MM-DD HH:MM:SS]` display the messages since the `--since` date to the `--until` date.
+
+**`journalctl`**&nbsp;&nbsp;`-o verbose` shows more information like:
+
+Verbose|Description|&nbsp;|&nbsp;
+-|-|-|-
+\_COMM|name of the command|\_EXE|path of the executable for the process
+\_PID|PID of the process|\_UID|UID of the user running the process
+\_SYSTEMD_UNIT|**systemd** unit that started the process
+
+**`journalctl`**&nbsp;`_SYSTEM_DUNIT=[unit].[type of unit] _PID=[PID]` display the logs of the specified process.
+
+**`journalctl`**&nbsp;&nbsp;`-b` display the last boot messages.  
+**`journalctl`**&nbsp;&nbsp;`-b -1` output of the previous boot.
+
+### **Time & date**
+
+Make sure that your system's time is accurate.
+
+**`timedatectl`** display information about how the system time is configured.
+
+**timedatectl** option|Description|&nbsp;|&nbsp;
+-|-|-|-
+list-timezones|list available timezones|set-ntp|enable or disable NTP synchronization
+set-timezone|set the time to the selected timezone|set-time|set time using `YYYY-MM-DD hh:mm:ss`
+
+**`tzselect`** select timezone interactively.
+
+### **`chrony` & NTP**
+
+`chronyd` is used to synchronize our system with an NTP server.  
+It uses servers from the NTP Pool Project (it can be changed to local servers).
+
+In order to add an NTP server, we have to add a line on `/etc/chrony.conf`  
+`server classroom.example.com iburst` the option `iburst` uses four measurements in a short period of time for a more accurate initial clock synchronization.  
+Restart `chronyd` after making changes.  
+**`chronyc`**&nbsp;`sources -v` list the NTP servers that we're connected to.
