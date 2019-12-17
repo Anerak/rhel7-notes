@@ -358,3 +358,67 @@ Use **`nice`** for run programs, **`renice`** for already running programs.
 **`nice`**&nbsp;&nbsp;`-n [nice level] [command]` run the program with the specified nice level.
 
 **`renice`**&nbsp;&nbsp;`-n [nice level] [PID]` renice the process that is already running.
+
+## **systemd & boot process**
+
+**`systemctl`**&nbsp;&nbsp;`-l` show what's running on the system without abbreviate the names.
+
+**`systemctl`**&nbsp;`[option] [unit]`
+
+Option|Function|Option|Function
+-|-|-|-
+start|starts the unit|reload|reload the configuration of the unit (keep PID)
+stop|stops the unit|restart|restarts the unit (new PID)
+enable|allow unit to run at boot time|disable|prevent unit from running at boot time
+is-enabled|check if the unit is enabled|is-active|check if the unit is active
+status|display the status of the unit|mask|disable and hide unit
+
+**`systemctl`** is also used for the boot targets.
+
+A target is used to declare that we reached certain point in the boot process. Their names ends with `.target`
+
+**`systemctl`**&nbsp;`list-units --type=target --all` display all the available targets and their current status.
+
+**`systemctl`**&nbsp;`list-dependencies [target].target |`&nbsp;**`grep`** `target` display all the dependencies for that target.
+
+**`systemctl`**&nbsp;`isolate [target].target` stops all the services that aren't required for the specified target. Not all targets can be isolated, only those with the `AllowIsolate=yes` flag.
+
+### Important targets
+
+Name|Usage
+-|-
+graphical|system supports multiple users, graphical and text-based logins
+multi-user|system supports multiple users, text-based logins only
+rescue|sulogin prompt, basic system initialization completed
+emergency|sulogin prompt, initramfs pivot complete and system root mounted on / read-only
+
+**`systemctl`**&nbsp;`set-default [target].target` change the default target.
+
+You can override the default target at boot time by appending `systemd.unit=[target].target` to the kernel line.
+
+### **Changing the root password**
+
+1. Edit the GRUB entry of the system.
+2. Search the line that starts with `linux16`
+3. Append `rd.break` to the end of the line.
+4. Press **`Ctrl + X`** to boot with the changes.
+5. System will load and present a root shell. The actual boot system is mounted as read-only on /sysroot.
+6. Remount the system with read-write permissions **`mount`**&nbsp;&nbsp;`-oremount,rw /sysroot`.
+7. Use **`chroot`** to treat `/sysroot` as the root of the file system tree **`chroot `**&nbsp;`/sysroot`.
+8. Change the password of **root** **`passwd`**&nbsp;`root`.
+9. Create the file `.autorelabel` to relabel the whole system with the right SELinux context **`touch`**&nbsp;`/.autorelabel`
+10. Execute **`exit`**  twice and the system will finish the boot process.
+
+### GRUB (GRand Unified Bootloader)
+
+**grub2** is the default boot loader on RHEL 7.
+
+The main configuration is located at `/boot/grub2/grub.cfg` but you're not supposed to edit that file directly.
+
+**`grub2-mkconfig`** generates a new config file.
+
+**`grub2-mkconfig`**&nbsp;&nbsp;`> /boot/grub2/grub.cfg` generates a new config file and applies the changes permanently.
+
+It's recommended to send the output to another file and review the changes before apply them.
+
+**`grub2-install`** reinstalls the boot loader in case it's corrupt.
