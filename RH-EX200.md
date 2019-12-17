@@ -698,11 +698,12 @@ Note: commands like **`ifconfig`** and **`netstat`** are now deprecated.
 **`tracepath`**&nbsp;`[domain]` traces the path to reach the specified domain.
 
 **`ss`**&nbsp;&nbsp;`-ta` socket statistics, `-t` for TCP sockets, `a` for all; display all the services running and what ports they're running on.
+
 Option|Description|Option|Description
 -|-|-|-
-\-n|numbers instead of names|\-t|TCP sockets
-\-u|UDP sockets|\-l|only listening sockets
-\-a|all sockets|\-p|process using the sockets
+-n|numbers instead of names|-t|TCP sockets
+-u|UDP sockets|-l|only listening sockets
+-a|all sockets|-p|process using the sockets
 
 ### **NetworkManager**
 
@@ -856,3 +857,9 @@ A|sync ACLs|X|sync SELinux context
 **`rsync`**&nbsp;`-av /etc/ /etcbackup` synchronize all the files from `/etc` with the ones on `/etcbackup`.
 
 **`rsync`**&nbsp;`-av /home/student/foo.bar student@desktop1:/home/student/` synchronize the local files at the remote machine.
+
+## **Software management**
+
+### **`yum` command**
+
+**`yum`** is a command line tool that knows how to install programs and also knows their dependencies and the relationships between packages.
