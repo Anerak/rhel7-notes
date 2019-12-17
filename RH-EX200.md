@@ -750,7 +750,7 @@ There are many type-specific options, some are better for wired connections, oth
 Note: ipv4 and ipv6 options are accessed using a dot `ipv4.addresses`.
 
 IPv4 Options|Description
--|-|-
+-|-
 addresses|set the IPv4 address and gateway
 dns|set the DNS
 method|set `auto` for DHCP, `manual` for static
