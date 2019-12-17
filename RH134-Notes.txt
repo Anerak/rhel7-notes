@@ -995,6 +995,7 @@ setfacl -m u:[name]:rX <filename>
 Add or modify ACL without replacing the existing ones.
 If we don't specify the name of the user or the name of the group, it will set those permissions to the owner/owner-group
 X = conditional execute :thinking:
+Not sure how many weeks later but now I can add that the capital X means "add execute permission for directories only" OR already has execute permission for some user.  man 1 setfacl (line 150).
 
 --------------------------
 setfacl -m o::- <filename>
@@ -1072,7 +1073,7 @@ By default, everything on Linux is denied. These policies allows processes actio
 
 SELinux has rules for remote files such as NFS and CIFS, although all files on these file systems are labeled with the same context.
 
-Many commands  that deal with files have an option (usually -Z) to display or set SELinux contents.
+Many commands that deal with files have an option (usually -Z) to display or set SELinux contents.
 
 ------
 ps axZ
