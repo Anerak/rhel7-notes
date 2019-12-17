@@ -1246,7 +1246,7 @@ sealert -a /var/log/audit/audit.log
 -----------------------------------
 Search and display SELinux messages in the audit.log file.
 
-scontenxt is the source of the problem. tcontext is the target that the service was trying to do something to.
+scontext is the source of the problem. tcontext is the target that the service was trying to do something to.
 
 We can generate a local policy module by doing
 --------------------------------------------------------------
