@@ -655,3 +655,162 @@ In order to add an NTP server, we have to add a line on `/etc/chrony.conf`
 `server classroom.example.com iburst` the option `iburst` uses four measurements in a short period of time for a more accurate initial clock synchronization.  
 Restart `chronyd` after making changes.  
 **`chronyc`**&nbsp;`sources -v` list the NTP servers that we're connected to.
+
+## **Network**
+
+We use the TCP/IP standard. TCP is used for large data, UDP for queries.  
+IPv4 addresses are made out of four octets.  
+Each IP address has a prefix which take part of the four octets available.
+
+`172.17.5.3/16` means `172.17` is the network and `5.3` the host.  
+The network is the prefix.  
+Also, each IP has a netmask:  
+`255.255.0.0` where `255.255` belongs to the network and `0.0` to the host
+
+Network|Host|Prefix
+-|-|-
+172.17|.5.3|/16
+255.255|.0.0
+192.168.5|.3|/24
+255.255.255|.0
+
+The machine on the subnet connects to the Gateway, which contacts with the rest of the world, for incoming or outcoming connections.  
+The Gateway connects to the internet using the public IP assigned by the DNS server owned by the ISP.
+
+`0.0.0.0/0` is the default gateway.
+
+Each network device has a MAC address. Also, their naming scheme on the system depends on how the BIOS recognizes the device:
+
+Interface|Short name|Location|Short name
+-|-|-|-
+Ethernet|en|On-board|o
+WLAN|wl|Hotplug|s
+WWAN|ww|PCI|p
+
+`enp6s0` translates as Ethernet PCI
+
+**`ip`**&nbsp;`address` display information about the device and IP address  
+Note: commands like **`ifconfig`** and **`netstat`** are now deprecated.
+
+**`ip`**&nbsp;&nbsp;`-s link show` show stats of the interface.  
+**`ip`**&nbsp;`route` display routing information.  
+**`ping`**&nbsp;`-c[n] [ip/domain]` ping the `[ip/domain] n` amount of times.  
+**`tracepath`**&nbsp;`[domain]` traces the path to reach the specified domain.
+
+**`ss`**&nbsp;&nbsp;`-ta` socket statistics, `-t` for TCP sockets, `a` for all; display all the services running and what ports they're running on.
+Option|Description|Option|Description
+-|-|-|-
+\-n|numbers instead of names|\-t|TCP sockets
+\-u|UDP sockets|\-l|only listening sockets
+\-a|all sockets|\-p|process using the sockets
+
+### **NetworkManager**
+
+Configuration files on `/etc/sysconfig/network-script`  
+**`man`**&nbsp;`nm-settings`
+
+Use **`nmcli`** to manage NetworkManager. Any changes to files that you do without using **`nmcli`** will be overwritten. You must turn on NetworkManager and do a `connection reload`, then down and up the connection.
+
+**`nmcli`**&nbsp;`device [option]` manage devices (you can use `d`, `dev` instead of `device`).
+Option|Description
+-|-
+status|list all devices
+dis|bring down an interface and temporarily disable autoconnect
+
+**`nmcli`**&nbsp;`net off` disable all manages interfaces.
+
+**`nmcli`**&nbsp;`connection [option] [name of connection]` manage connections (you can use `c`, `conn` instead of `connection`).
+
+Option|Description
+-|-
+show|view basic network information (more if you specify the connection name)
+up|activate a connection
+down|deactivate a connect (restart if autoconnect is on)
+add|add connection
+mod|modify a connection
+del|delete a connection
+reload|reloads configurations based on your manual changes
+
+**`nmcli`**&nbsp;`con add help` shows all the options that can be used with this command.
+
+### **Basic options for connections**
+
+Common Options|Description
+-|-
+type|`ethernet wifi wimax ppoe` and more
+ifname|device name
+con-name|connection name
+autoconnect|`yes` (default), `no`
+
+There are many type-specific options, some are better for wired connections, others for wireless.
+
+Note: ipv4 and ipv6 options are accessed using a dot `ipv4.addresses`
+
+IPv4 Options|Description|
+-|-|-
+addresses|set the IPv4 address and gateway
+dns|set the DNS
+method|set `auto` for DHCP, `manual` for static
+gateway|use when modifying the connection
+
+**`nmcli`**&nbsp;`c a con-name "Wired Connection X" ifname enp0s3 type ethernet autoconnect yes ipv4.addresses "192.168.1.10/24" ipv4.gateway "192.168.254.254" ipv4.dns "192.168.254.254" ipv4.method manual` create a new static connection.
+
+**`nmcli`**&nbsp;`c m "Wired Connection X" +ipv4.addresses "10.0.0.1/24"` the `+` means we're adding another value instead of replacing the current one.
+
+**`nmcli`**&nbsp;`c a con-name "Dynamic" ifname enp0s3 type ethernet autoconnect yes ipv4.method auto` create a new DHCP conection.
+
+#### **Configuration Options for `ifcfg` File**
+
+Static|Dynamic|Either
+-|-|-
+BOOTPROTO=none|BOOTPROTO=dhcp|DEVICE=eth0
+IPADDR0=`172.25.x.10`||NAME=`"System eth0"`
+PREFIX0=`24`||ONBOOT=`yes`
+GATEWAY0=`172.25.x.254`||UUID=`some UUID`
+DEFROUTE=`yes`||USERCTL=`yes`
+DNS1=`172.25.254.254`|&nbsp;|&nbsp;
+
+`USERCTL` allows non-root users to modify the network.
+
+### **Hostname**
+
+Hostnames aren't configured on the `/etc/hosts` file  
+The static host name is stored on `/etc/hostname`. If the file doesn't exist, a hostname hasn't been defined.
+
+**`hostnamectl`**&nbsp;`status` display information about the hostname.
+
+**`hostnamectl`**&nbsp;`set-hostname [hostname]` change the hostname of the machine.
+
+**`getent`**&nbsp;`hosts [hostname]` test host name resolution with the `/etc/hosts` file.
+
+**`host`**&nbsp;`[hostname]` test the DNS server connectivity.
+
+## **`ssh` command**
+
+Configuration file: `/etc/ssh/sshd_config`
+
+**`ssh`**&nbsp;`[remote username]@[remote host]` connect through SSH to another machine.
+
+**`ssh`**&nbsp;`[remote username]@[remote host] [command]` connects and automatically executes the specified command.
+
+Wanna connect without passwords? You need a SSH key.
+
+**`ssh-keygen`** generate a set of public and private keys.  
+The private key is stored at the file `~/.ssh/id_rsa` and the public key at the file `~/.ssh/id_rsa.pub`.  
+You can also set a passphrase that you'll have to enter when connecting.
+
+**`ssh-agent`** it will enter the passphrase for you during the time you're connected.
+
+**`ssh-copy-id`**&nbsp;`[remote user]@[remote host]` copy the public key to the remote machine. Once it's done, we can use the password-less system to connect.
+
+### **Disable root access**
+
+1. Edit the file `/etc/ssh/sshd_config`
+2. Search and uncomment the line `PermitRootLogin`
+3. Change the `yes` for `no` (you can also set it to `without-password` for users that already copied their public key).
+
+### **Disable Password Authentication**
+
+1. Edit the file `/etc/ssh/sshd_config`
+2. Search the line `PasswordAuthentication`
+3. Replace `yes` for `no`.
