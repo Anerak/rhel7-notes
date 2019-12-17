@@ -68,7 +68,7 @@ Symbol|Usage|Example|Applies for
 
 **`locate`**&nbsp;&nbsp;`-i [search term]` case insensitive.
 
-**`locate`**&nbsp;&nbsp;`-n [X] [search term]` search and stops after X results.
+**`locate`**&nbsp;&nbsp;`-n [n] [search term]` search and stops after `n` results.
 
 **`updatedb`** update the locate database.
 
@@ -93,7 +93,7 @@ Option|Function
 
 **`find`**&nbsp;&nbsp;`/home -user foo` find all the files that belong to `foo`
 
-**`find`**&nbsp;&nbsp;`/ -type l -links +3`
+**`find`**&nbsp;&nbsp;`/ -type l -links +3` find all the symbolic links with 3 or more names.
 
 ## **Users**
 
@@ -172,6 +172,8 @@ Option|Description
 
 ## **Permissions**
 
+### **Standard permissions**
+
 ### Word model
 
 **`chmod`**&nbsp;`WhoWhatWhich <filename>`
@@ -213,6 +215,42 @@ Change the default permissions applied to a new created file/directory using **`
 Write the value for the permissions excluded.
 
 **`umask`**&nbsp;`0022` new files will be created as `-rwxr--r--` and `drwxr--r--`.
+
+## **ACLs**
+
+Check if a file has ACLs using **`ls`**&nbsp;`-l [file]`. If a `+` symbol is present next to the permissions column, then it contains ACLs.
+
+You can set explicit permissions for users and groups that aren't the owner or primary group of the file.
+
+Each ACL has a mask that gets recalculated every time you modify the ACL settings of a file.
+
+The mask limits what permissions are effective (if the mask is `r--`, ACLs with `rw-` won't make use of the write permission).
+
+**`getfacl`**&nbsp;`<filename>` get the ACL settings of the specified file. The command still works even if the file doesn't have any ACL settings.
+
+**`setfacl`**&nbsp;`[option] [permissions]`
+
+Option|Description
+-|-
+\-m|modify the ACL of a file or directory
+\-x|remove the ACL entry of a file or directory
+\--set-file=|apply the ACL from another file (use the `getfacl` output)
+
+**`setfacl`**&nbsp;&nbsp;`-m u:foo:r notes.txt` add (modify if it's already present) an entry specifying that the user `foo` has read permision on the file.
+
+**`setfacl`**&nbsp;&nbsp;`-m o:: notes.txt` changes 
+
+**`setfacl`**&nbsp;&nbsp;`-x u:foo: notes.txt` removes the entry for the user `foo`. Note that you don't need to specifiy any permissions, just leave the last field empty.
+
+**`getfacl`**&nbsp;`fileWithACL |`&nbsp;**`setfacl`**&nbsp;`--set-file=- newFile` uses the output from the **`getfacl`** command and uses it to set the ACLs on `newFile`.
+
+**`setfacl`**&nbsp;&nbsp;`-m m::r <filename>` modify the mask to only allow the read permission.
+
+**`setfacl`**&nbsp;&nbsp;`-m d:u:rx <directory>` modify the default ACLs of the directory.
+
+**`setfacl`**&nbsp;&nbsp;`-k <directory>` remove all default settings on a directory.
+
+**`setfacl`**&nbsp;&nbsp;`-b <directory>` remove all ACLs on a directory.
 
 ## **Processes**
 
