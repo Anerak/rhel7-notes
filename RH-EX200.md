@@ -1,7 +1,6 @@
 # Resume
 
-Most of the stuff here comes from the .txt with notes. There are some cases where I copied the information from the man pages or Internet.
-
+Most of the stuff here comes from the .txt with notes. There are some cases where I copied the information from the man pages or Internet.  
 Some sections like **`vim`** or **`kickstart`** aren't present due printing reasons (paper and ink are expensive).
 
 ## **`ls` & `redirect symbols`**
@@ -97,12 +96,9 @@ Option|Function
 
 ## **Users**
 
-`/etc/passwd` contains the local user information.
-
-`/etc/shadow` contains the user's passwords.
-
-`/etc/group` contains the local group information.
-
+`/etc/passwd` contains the local user information.  
+`/etc/shadow` contains the user's passwords.  
+`/etc/group` contains the local group information.  
 `/etc/login.defs` contains the default parameters of accounts, such as password age.
 
 **`authconfig`**&nbsp;`--passalgo [algorithm]`
@@ -238,7 +234,7 @@ Option|Description
 
 **`setfacl`**&nbsp;&nbsp;`-m u:foo:r notes.txt` add (modify if it's already present) an entry specifying that the user `foo` has read permision on the file.
 
-**`setfacl`**&nbsp;&nbsp;`-m o:: notes.txt` changes 
+**`setfacl`**&nbsp;&nbsp;`-m o:: notes.txt` changes the `others` permissions to `---`
 
 **`setfacl`**&nbsp;&nbsp;`-x u:foo: notes.txt` removes the entry for the user `foo`. Note that you don't need to specifiy any permissions, just leave the last field empty.
 
@@ -442,7 +438,7 @@ You can override the default target at boot time by appending `systemd.unit=[tar
 4. Press **`Ctrl + X`** to boot with the changes.
 5. System will load and present a root shell. The actual boot system is mounted as read-only on /sysroot.
 6. Remount the system with read-write permissions **`mount`**&nbsp;&nbsp;`-oremount,rw /sysroot`.
-7. Use **`chroot`** to treat `/sysroot` as the root of the file system tree **`chroot `**&nbsp;`/sysroot`.
+7. Use **`chroot`** to treat `/sysroot` as the root of the file system tree **`chroot`**&nbsp;`/sysroot`.
 8. Change the password of **root** **`passwd`**&nbsp;`root`.
 9. Create the file `.autorelabel` to relabel the whole system with the right SELinux context **`touch`**&nbsp;`/.autorelabel`
 10. Execute **`exit`**  twice and the system will finish the boot process.
@@ -460,3 +456,84 @@ The main configuration is located at `/boot/grub2/grub.cfg` but you're not suppo
 It's recommended to send the output to another file and review the changes before apply them.
 
 **`grub2-install`** reinstalls the boot loader in case it's corrupt.
+
+## **SELinux**
+
+`/etc/selinux/config`  
+**Recommended:** install the packages `policycoreutils-python selinux-policy-devel setroubleshoot-server`.  
+`selinux-policy-devel` adds useful man pages related to SELinux.  
+**`sepolicy`**&nbsp;&nbsp;`manpage -a -p /usr/local/man/man8` creates the SELinux man pages.
+
+Security Enhanced Linux (SELinux) is an additional layer of system security.  
+Every single file in the system has a tag or context assigned.  
+SELinux labels have several contexts: user, role, type, and sensitivity.  
+RHEL uses the targeted policy by default, bases it's rules rules on the third context: type.
+
+Every process goes through the SELinux vector table to look up what is allowed to do and which files are going to be used.  
+If the process is not allowed to do certain action or use certain file, an alert will be emitted.
+
+By default, everything on Linux is denied. You can allow processes to do their stuff with policy rules.  
+There are three modes for SELinux:  
+
+- Enforcing: SELinux denies access to anything that doesn't have an explicity policty to allow a behaviour.
+- Permissive: used to troubleshoot issues. SELinux allow all interactions, even if there's no explicit rule, and it logs those interaction it would have denied in enforcing mode.
+- Disabled: turns off SELinux. You must reboot the system to disable SELinux entirely.
+
+It's better to use permissive mode than disable SELinux. The kernel will automatically maintain SELinux file system labels as needed, avoiding the need of relabeling during the system reboot.
+
+**`getenforce`** shows the current SELinux mode.
+
+**`setenforce`**&nbsp;`[Enforcing|Permissive|1|0]` changes the SELinux mode. Or we can edit the `/etc/selinux/config` file.
+
+SELinux also has Booleans that can be used to tune the policy doing selective adjustments.
+
+**`getsebool`**&nbsp;&nbsp;`-a` display all the current Booleans and their values.
+
+### **Changing SELinux contexts**
+
+We can change contexts with the command **`chcon`** but it's not persistent.
+
+**`chcon`**&nbsp;&nbsp;`-t [context] <filename>` changes the context of the specified file.
+
+Using the **`semanage`** command we can do persistent changes.  
+
+### **`semanage`** **is part of the package `policycoreutils-python`, maybe you'll have to install it.**
+
+**`semanage`**&nbsp;`fcontext -l` show all the contexts on the database (supports RegEx).
+
+**`semanage`**&nbsp;`fcontext -a -t [context] [folder]` add a new rule on the SELinux database. From now, every time you restore the context of the files inside the specified folder, the specified context will be applied.
+
+**`semanage`**&nbsp;`fcontext -a -t httpd_sys_content_t '/virtual(.*)?'` set the context `httpd_sys_content_t` to the files inside of `/virtual`.
+
+**`restorecon`**&nbsp;&nbsp;`-Rv [directory]` restores the context of the directory.
+
+### **Remember to use `restorecon` after changing the directory's context.**
+
+**`getseboolean`**&nbsp;&nbsp;`-a` list all the current booleans and their current status.  
+**`getseboolean`**&nbsp;`[Boolean name]` shows the status of the specified Boolean.
+
+**`setsebool`**&nbsp;`[Boolean] [on|off]` toggles the Boolean.
+
+**`setsebool`**&nbsp;&nbsp;`-P httpd_enable_homedirs on` set the `httpd_enable_homedirs` Boolean `on` and makes the change persistent (`-P`).
+
+**`semanage`**&nbsp;`boolean -l` list all the Booleans with their current status, default value and description (use **`grep`** to filter what you're looking for).
+
+**`semanage`**&nbsp;`boolean -l -C` show all the Booleans which value has been changed.
+
+### **Troubleshooting SELinux**
+
+There are times where SELinux may deny something. Most of the time the issue is an incorrect file context.  
+Check SELinux messages on `/var/log/audit/audit.log` using the command **`sealert`**&nbsp;&nbsp;`-l`.
+
+### **The package `setroubleshoot-server` must be installed in order to use `sealert`**
+
+**`sealert`**&nbsp;&nbsp;`-a /var/log/audit/audit.log` search and display SELinux messages in the `audit.log` file.
+
+**`sealert`**&nbsp;&nbsp;`-l [UUID]` display more information about the SELinux violation.
+
+**scontext** is the source of the problem  
+**tcontext** is the target that the service was trying to do something to.
+
+**`grep`**&nbsp;`[service] /var/log/audit/audit.log |`&nbsp;**`audit2allow`**&nbsp;&nbsp;`-M mypol` generate a local policy module.
+
+**`semodule`**&nbsp;&nbsp;`-i mypol.pp` enable the policy we created.
