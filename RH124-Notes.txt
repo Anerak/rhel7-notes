@@ -2002,7 +2002,7 @@ Just mask it!
 ---------------------
 systemctl mask [unit]
 ---------------------
-Makes the server disappear from normal listings and also makes it unable to be automatically started up.
+Makes the service disappear from normal listings and also makes it unable to be automatically started up.
 
 -----------------------
 systemctl unmask [unit]
