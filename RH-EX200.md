@@ -814,3 +814,45 @@ You can also set a passphrase that you'll have to enter when connecting.
 1. Edit the file `/etc/ssh/sshd_config`
 2. Search the line `PasswordAuthentication`
 3. Replace `yes` for `no`.
+
+## **Copying files between systems**
+
+### **`scp` command**
+
+Send files through SSH.
+
+You can use the `-r` flag with **`scp`** to copy files recursively.
+
+**`scp`**&nbsp;`[files to send] [remote user]@[remote host]:/path/to/put/files`  
+**`scp`**&nbsp;`/etc/hosts root@rmachine1:/root/copied` sends the local file `hosts` to the directory `/root/copied` on the remote machine.  
+**`scp`**&nbsp;`[remote user]@[remote host]:/file/to/copy /path/to/put/files` send a remote file to our machine.
+
+### **`sftp` command**
+
+SSH FTP interactive interface.
+
+**`sftp`**&nbsp;`[remote user]@[remote host]` start an **`sftp`** session on the remote server.  
+You can use commands such as `ls`, `cd`, `mkdir`, `rmdir`, `pwd` to navigate.  
+`put` and `get` can be used to upload and download files.
+
+### **`rsync` command**
+
+Quite useful when you need to **synchronize** files.
+
+**Important** use the `-n` option to simulate the **`rsync`** changes without applying them.
+
+**`rsync`** copy files the first time, then it will only modify those that were affected/copy new files.
+
+Option|Description|&nbsp;|&nbsp;
+-|-|-|-
+v|verbosity output|a|archive mode
+r|sync recursively the whole directory|l|sync symbolic links
+p|preserve permissions|t|preserve timestamps
+g|preserver group ownership|o|preserve files owner's
+-D|sync device files (only for troubleshoot)|H|preserve hard links
+A|sync ACLs|X|sync SELinux context
+
+**`rsync`**&nbsp;`[option] [files to synchronize] [/path/to/place/them]`  
+**`rsync`**&nbsp;`-av /etc/ /etcbackup` synchronize all the files from `/etc` with the ones on `/etcbackup`.
+
+**`rsync`**&nbsp;`-av /home/student/foo.bar student@desktop1:/home/student/` synchronize the local files at the remote machine.
