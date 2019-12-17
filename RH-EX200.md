@@ -483,6 +483,7 @@ If the process is not allowed to do certain action or use certain file, an alert
 
 By default, everything on Linux is denied. You can allow processes to do their stuff with policy rules.  
 There are three modes for SELinux:  
+
 Mode|Description
 -|-
 Enforcing|denies access to everything without explicit policies for that behaviour
@@ -713,6 +714,7 @@ Configuration files on `/etc/sysconfig/network-script`
 Use **`nmcli`** to manage NetworkManager. Any changes to files that you do without using **`nmcli`** will be overwritten. You must turn on NetworkManager and do a `connection reload`, then down and up the connection.
 
 **`nmcli`**&nbsp;`device [option]` manage devices (you can use `d`, `dev` instead of `device`).
+
 Option|Description
 -|-
 status|list all devices
@@ -745,9 +747,9 @@ autoconnect|`yes` (default), `no`
 
 There are many type-specific options, some are better for wired connections, others for wireless.
 
-Note: ipv4 and ipv6 options are accessed using a dot `ipv4.addresses`
+Note: ipv4 and ipv6 options are accessed using a dot `ipv4.addresses`.
 
-IPv4 Options|Description|
+IPv4 Options|Description
 -|-|-
 addresses|set the IPv4 address and gateway
 dns|set the DNS
