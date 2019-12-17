@@ -537,3 +537,25 @@ Check SELinux messages on `/var/log/audit/audit.log` using the command **`sealer
 **`grep`**&nbsp;`[service] /var/log/audit/audit.log |`&nbsp;**`audit2allow`**&nbsp;&nbsp;`-M mypol` generate a local policy module.
 
 **`semodule`**&nbsp;&nbsp;`-i mypol.pp` enable the policy we created.
+
+## **`tar` command**
+
+**`tar`**&nbsp;`[options]`
+
+Option|Description|Option|Description
+-|-|-|-
+c|create an archive|x|extract an archive
+f|name of the archive to work with|t|list the contents of the archive
+p|preserve the permissions of files|P|don't strip leading **`/`** from absolute paths
+v|verbosity|compression|`z` gzip, `j` bzip2, `J` xz
+
+**`tar`**&nbsp;`cf [resulting file name] [files to add]` this will create an archive.  
+Even if we don't use extensions on UNIX, it's good to add `.tar` at the end of the file.
+
+**`tar`**&nbsp;`czf /root/foo.tar.gz /etc` creates a gzip-compressed tar archive, using the contents of the `/etc` folder.
+
+**`tar`**&nbsp;`cjf /root/backup.tar.bz2 /var/log` creates a bzip2 archive.
+
+**`tar`**&nbsp;`cJf /root/bar.tar.xz /etc/selinux` creates a xz archive.
+
+**`tar`**&nbsp;`xzf /root/foo.tar.gz` extracts the content of the archive.
