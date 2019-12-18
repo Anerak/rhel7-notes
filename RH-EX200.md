@@ -864,6 +864,70 @@ The static host name is stored on `/etc/hostname`. If the file doesn't exist, a 
 
 **`host`**&nbsp;`[hostname]` test the DNS server connectivity.
 
+## **firewalld**
+
+**Mask iptables.service and ip6tables.service using `systemctl mask`**
+
+**firewalld** replaces `iptables`,`ip6tables` and `ebtables`.
+
+### **Predefined zones ( `man 5 firewalld.zones` )**
+
+Zone|Description
+-|-
+home|reject incoming traffic unless related to outgoing traffic or matching `ssh`, `mdns`, `ipp-client`, `samba-client` or `dhcpv6-client`
+internal|same as the home zone
+work|reject incoming traffic unless related to outgoing traffic or matching `ssh`, `ipp-client` or `dhcpv6-client`
+public|used by default, reject incoming trauffic unless related to outgoing traffic or matching `ssh` or `dhcpv6-client`
+external|reject incoming traffic unless related to traffic or matching `ssh`, outgoing IPv4 traffic forwarded through this zone is masqueraded
+dmz|reject inconming traffic unless related to outgoing traffic or matching `ssh`
+block|reject all incoming traffic unless related to outgoing traffic
+drop|drop all incoming traffic unless related to outgoing traffic (without sending a response)
+
+### **Pre-defined services**
+
+Service|Description|Ports
+-|-|-
+ssh|local ssh server|`22/TCP`
+dhcpv6-client|local DHCPv6 client|`546/UDP` or `fe80::/64` on IPv6
+ipp-client|local IPP printing|`631/UDP`
+samba-client|local Windows file and print sharing client|`137/UDP 138/UDP`
+mdns|multicast DNS (mDNS) local-link name resolution|`5353/UDP` to the `224.0.0.251` IPv4 or `ff02::fb` IPv6
+
+### **`firewall-cmd`** command
+
+You can use the graphical tool **`firewall-config`** or **`firewall-cmd`** for command-line.
+
+Changes can be made only runtime or permanent (adding the `--permanent` option).  
+You can also specify the zone using `--zone` (it's required for some commands).  
+CIDR = IP
+
+Option|Description|&nbsp;|&nbsp;
+-|-|-|-
+`--get-default-zone`|query the current default zone
+`--set-default-zone=<ZONE>`|change the default zone (runtime and permanent)
+`--get-zones`|list all zones
+`--get-active-zones`|list all zones currently in use
+`--list-all`|list all configured interfaces, sources, services and ports for `--zone=<ZONE>` (otherwise default)
+`--list-all-zones`|retrieve information for all zones
+`--reload`|drop the runtime configuration and apply the persistent configuration
+
+#### **Zone commands (any of these command uses `--zone=<ZONE>`)**
+
+Option|Description
+-|-
+`--add-source=<CIDR>`|route all traffic coming from the `<CIDR>`
+`--remove-source=<CIDR>`|remove the rule routing all trafic from the `CIDR` specified
+`--add-interface=<INTERFACE>`|route all traffic from `<INTERFACE>` to the specified zone
+`--change-interface=<INTERFACE>`|associate the interface with `<ZONE>`
+`--add-service=<SERVICE>`|allow traffic to `<SERVICE>`
+`--remove-service=<SERVICE>`|remove `<SERVICE>` from the allowed list for the zone
+`--add-port=<PORT/PROTOCOL>`|allow traffic to the `<PORT/PROTOCOL>` for the zone
+`--remove-port=<PORT/PROTOCOL>`|remove the `<PORT/PROTOCOL>` from the allowed list
+
+**`firewall-cmd`**&nbsp;&nbsp;`--set-default dmz` change the default zone to `dmz`.  
+**`firewall-cmd`**&nbsp;&nbsp;`--permanent --zone=internal --add-source=192.186.0.0/24` assign traffic from `192.168.0.0/24` to the `internal` zone.  
+**`firewall-cmd`**&nbsp;&nbsp;`--permanent -add-service=mysql` open the network ports for `mysql` on the `internal` zone.
+
 ## **`ssh` command**
 
 Configuration file: `/etc/ssh/sshd_config`
