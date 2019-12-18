@@ -22,6 +22,10 @@ Create files if they don't exist, otherwise, modify the timestamp.
 
 **`touch`**&nbsp;`foo` creates the file `foo`
 
+## **`uname` command**
+
+**`uname`**&nbsp;&nbsp;`-rms` show the current kernel.
+
 ## **`ln` command**
 
 The purpose of **`ln`** is create another name for a file. Reference the same contents of the file but with another name.
@@ -657,6 +661,78 @@ In order to add an NTP server, we have to add a line on `/etc/chrony.conf`
 Restart `chronyd` after making changes.  
 **`chronyc`**&nbsp;`sources -v` list the NTP servers that we're connected to.
 
+## **Software management**
+
+### **`yum` command**
+
+**`yum`** is a command line tool that knows how to install programs and also knows their dependencies and the relationships between packages.
+
+Option|Description|&nbsp;|&nbsp;
+-|-|-|-
+help|display usage information|list|list all the packages available to install
+repolist|list all the available repositories|&nbsp;|`package name` search this package (or another with similar name)
+&nbsp;|use the keyword `all` to display all of them, enabled and disabled|&nbsp;|`installed` list all the installed packages
+search|search a package that matches the keyword|info|display information about the package specified
+provide|search the package that provides the specified file|install|install the specified package (can be used with `.rpm` files)
+update|update the specified package|remove|removes the specified package
+history|show the list of transactions
+&nbsp;|`undo [n]` reverses the `n` amount of transactions
+
+#### **Group options**
+
+You can install whole groups of packages
+
+Option|Description|&nbsp;|&nbsp;
+-|-|-|-
+`list`|show all the package groups availables
+`install`| install the specified group
+`mark`| marks the group as installed, missing packages will be install on the next update
+`info`| display more information about the group
+&nbsp;|`=` package was installed with the group | `+` will be installed with the group
+&nbsp;|`-`isn't installed and won't be installed with the group|`no marker` is installed but not with the group
+
+**`yum`**&nbsp;`update kernel` update the kernel.  
+**`yum`**&nbsp;`install cowsay` install the package `cowsay`
+
+### **Adding repositories**
+
+**Repository files are located at `/etc/yum.repos.d/`.**
+
+**`yum-config-manager`**&nbsp;&nbsp;`--add-repo="[repository URL]"` this will create the proper `.repo` file for that repository.  
+This command belongs to the `yum-utils` package.
+
+```bash
+[Repository]
+name=Super Repo
+baseurl=http://myfirstrepo.com/
+## if it's a 0, the repository is defined but not searched by default.
+enabled=1
+## check the public key when you grab or install a package from that repository.
+gpgcheck=1
+## where is the public key located
+gpgkey=file:///etc/pki/rpm/gpg/RPM-GPGP-KEY
+```
+
+### **`rpm` command**
+
+RPM files keep a naming scheme  
+`name-version-release.architecture`  
+`httpd-tools-2.4.6-7.el7.x86_64.rpm`
+
+**`rpm`**&nbsp;`-q [option] [package/file]` query information about the specified package/file.
+
+Option|Description
+-|-
+\-p| display information about the `.rpm` file specified
+\-f|what packages provides the specified file
+\-l|list of files installed by the specified package
+\-c|list of configuration files
+\-d|list of documentation files
+\--scripts|list of scripts that may run on install or removal of the package
+\--changelog|show the changelog of the specified package
+
+**`rpm`**&nbsp;&nbsp;`-i [package]` install the package.
+
 ## **Network**
 
 We use the TCP/IP standard. TCP is used for large data, UDP for queries.  
@@ -859,9 +935,3 @@ A|sync ACLs|X|sync SELinux context
 **`rsync`**&nbsp;`-av /etc/ /etcbackup` synchronize all the files from `/etc` with the ones on `/etcbackup`.
 
 **`rsync`**&nbsp;`-av /home/student/foo.bar student@desktop1:/home/student/` synchronize the local files at the remote machine.
-
-## **Software management**
-
-### **`yum` command**
-
-**`yum`** is a command line tool that knows how to install programs and also knows their dependencies and the relationships between packages.
