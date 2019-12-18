@@ -1262,19 +1262,21 @@ Command|Description
 #### **Volume Group (VG)**
 
 Made with PVs. It can hold Logical volumes.
+
 Command|Description
 -|-
-**`vgcreate`**&nbsp;`[name] [physical volumes]`| create a new volume group
+**`vgcreate`**&nbsp;`[name] [physical volumes]`|create a new volume group
 &nbsp;|`-s [n]` define PE size, `-s 16M` define each PE to be 16 MiB
-**`vgremove`**&nbsp;`[VG name]`| delete the VG, leaving the PV available for other volume group
-**`vgextend`**&nbsp;`[VG name] [PV]`| extend the size of the VG
-**`vgreduce`**&nbsp;`[VG name] [PV]`| reduce the size of the VG
-**`vgs`**| display VGs
-**`vgdisplay`**| display more information about VGs (specify a VG to get more details)
+**`vgremove`**&nbsp;`[VG name]`|delete the VG, leaving the PV available for other volume group
+**`vgextend`**&nbsp;`[VG name] [PV]`|extend the size of the VG
+**`vgreduce`**&nbsp;`[VG name] [PV]`|reduce the size of the VG
+**`vgs`**|display VGs
+**`vgdisplay`**|display more information about VGs (specify a VG to get more details)
 
 #### **Logical Volume (LV)**
 
 Logical volumes are created inside of VG.
+
 Command|Description
 -|-
 **`lvcreate`**&nbsp;&nbsp;`-n [LV-name] -L [size] [VG-name]`|create a new logical volume
