@@ -987,7 +987,7 @@ The static host name is stored on `/etc/hostname`. If the file doesn't exist, a 
 
 **firewalld** replaces `iptables`,`ip6tables` and `ebtables`.
 
-### **Predefined zones ( `man 5 firewalld.zones` )**
+### **Predefined zones (`man 5 firewalld.zones`)**
 
 Zone|Description
 -|-
@@ -1116,3 +1116,151 @@ A|sync ACLs|X|sync SELinux context
 **`rsync`**&nbsp;`-av /etc/ /etcbackup` synchronize all the files from `/etc` with the ones on `/etcbackup`.
 
 **`rsync`**&nbsp;`-av /home/student/foo.bar student@desktop1:/home/student/` synchronize the local files at the remote machine.
+
+## **LDAP users**
+
+`Lightweight Directory Access Protocol`, used in Active Directory and IPA Server.
+
+**Install these packages:** `authconfig-gtk`, `sssd` and `krb5-workstation`.  
+There's also a terminal version of `authconfig-gtk` but it's deprecated.
+
+In order to connect to a central LDAP Server, `authconfig` needs:
+
+- The host name of the LDAP server(s).
+- The base DN (Distinguished Name) of the part of the LDAP tree where the system should look for users (`dc=example dc=com`).
+- If SSL/TLS is used to encrypt communications with the LDAP server, a root CA certificate that can validate the certificates is offered offered by the LDAP server.
+
+Necessary Kerberos parameters:
+
+- The name of the Kerberos realm to use.
+- One or more key distribution centers (KDC). This is the host name of your Kerberos server(s).
+- The host name of one of more admin servers.
+
+**`getent`**&nbsp;`passwd <username>` test the LDAP + Kerberos configuration.
+
+## **Partitions & File Systems**
+
+### **Useful commands**
+
+Command|Description
+-|-
+**`df`**&nbsp;&nbsp;`-h`|display filesystems with space on human readable format
+**`du`**&nbsp;&nbsp;`-h`|display disk usage on human readable format
+**`blkid`**|show all file systems with their UUIDs
+**`lsof`**|show the processes using the specified directory/file
+**`free`**&nbsp;&nbsp;`-m`|display memory usage in MiB
+
+### **`mount` command**
+
+**`mount`**&nbsp;`[device file or UUID] [mount point]`  
+**`mount`**&nbsp;&nbsp;`-a` mount all the file systems specified on `/etc/fstab`.  
+**`mount`**&nbsp;&nbsp;`-o remount,rw /foo` remounts `/foo` with read-write permissions.
+
+### **`umount` command**
+
+**`umount`**&nbsp;`[mount point]`  
+**`umount`**&nbsp;`/filesystem-mounted` unmount the filesystem mounted on `/filesystem-mounted`.  
+If the mount point is being accessed by a process, you can't unmount it (check with **`lsof`**).
+
+### **Partitions**
+
+**MBR (`Master Boot Record`)**
+
+- 4 partitions (maximum, 15 by using extended and logical partitions).
+- Partition size of 2 TiB.
+- Located at the first part of the scheme (boot block).
+- **`fdisk`**
+
+**GPT (`GUID Partition Table`)**
+
+- Support for 128 partitions.
+- Partition size of 8 ZiB.
+- First block is the protective MBR, then the partitions table (backup at the end of the disk).
+- **`gdisk`**
+
+#### **`fdisk` & MBR partitions**
+
+**`fdisk`**&nbsp;`[device]`  
+**`fdisk`**&nbsp;`/dev/sdb` create MBR partitions on `/dev/sdb`.
+
+Key|Description
+-|-
+d|delete partition
+m|help
+n|create partition
+p|display partitions available in the disk
+t|change partition's type (L to see table of types)
+w|write changes
+
+Run **`partprobe`**&nbsp;`[device]` after writing the changes.
+
+#### **`gdisk` & GPT partitions**
+
+**`gdisk`**&nbsp;`[device]`  
+**`gdisk`**&nbsp;`/dev/sdb` create GPT partitions on `/dev/sdb`
+
+The keys are like the ones used for **`gdisk`** except for others that are new.  
+Use `?` or `m` to see the help list of commands.
+
+Remember to run **`partprobe`**&nbsp;`[device]` after you write the changes on the disk.
+
+### **Creating file systems**
+
+After a block device has been created, we need to format it.
+
+**`mkfs`**&nbsp;&nbsp;`-t [type] [device]`  
+**`mkfs`**&nbsp;&nbsp;`-t ext4 /dev/sdb1` apply the `ext4` file system to `/dev/sdb1`.  
+**`mkfs`**&nbsp;&nbsp;`-t xfs /dev/sdc3` apply the `xfs` file system to `/dev/sdc3`.
+
+### **Swap partitions**
+
+Swap partitions are like extra RAM.
+
+Create a new partition with **`fdisk`** or **`gdisk`**, assigning the type `Linux Swap`.
+
+**`mkswap`**&nbsp;`[device]`
+
+**`swapon`**&nbsp;`[device]`  
+**`swapon`**&nbsp;`-p [priority] [device]` the priority means which swap partition will be used first (higher value means more priority of use).
+
+**`swapon`**&nbsp;&nbsp;`-a` activate all the partitions marked as swap space.  
+**`swapon`**&nbsp;&nbsp;`-s` summary of swap partitions.
+
+### **/etc/fstab**
+
+**An incorrect /etc/fstab entry may render the machine unbootable.**  
+**Use `mount`**&nbsp;&nbsp;`-a`**to check if all the entries are correct.**
+
+Entries on `/etc/stab` will be automatically mounted when the system boots.
+
+`UUID=[UUID] [mount point] [file  system type] [options during mount] [dump flag and fsco order]`
+
+```shell
+UUID=some-UUID      /mnt/storage    xfs     defaults     0 0
+/dev/sda            /               xfs     defaults     0 0
+```
+
+You can use the device name instead of UUID. The problem is that device numbers are assigned when disks are discovered during the boot.  
+If you change a disk, it may take the same device name.
+
+### **LVM (Logical Volume Management)**
+
+#### **Physical Volume (PV)**
+
+It's the hardware itself, lowest level of LVM.
+
+Your partitions must have the `Linux LVM` type to be used as PV.
+
+**`pvcreate`**&nbsp;`/dev/sda3 /dev/sdb2` mark `/dev/sda3` and `/dev/sdb2` as PVs.  
+**`pvmove`**&nbsp;`/dev/sda4` move PEs from `/dev/sda4`.  
+**`pvremove`**&nbsp;`/dev/sda4` remove the PV label to `/dev/sda4`.  
+**`pvs`** display PVs.  
+**`pvdisplay`** display more information about PVs.
+
+#### **Volume Group (VG)**
+
+Made with PVs. It can hold Logical volumes.
+
+**`vgcreate`**&nbsp;`[name] [physical volumes]`
+
+#### **Logical Volume (LV)**
