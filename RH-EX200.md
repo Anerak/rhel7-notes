@@ -1251,16 +1251,125 @@ It's the hardware itself, lowest level of LVM.
 
 Your partitions must have the `Linux LVM` type to be used as PV.
 
-**`pvcreate`**&nbsp;`/dev/sda3 /dev/sdb2` mark `/dev/sda3` and `/dev/sdb2` as PVs.  
-**`pvmove`**&nbsp;`/dev/sda4` move PEs from `/dev/sda4`.  
-**`pvremove`**&nbsp;`/dev/sda4` remove the PV label to `/dev/sda4`.  
-**`pvs`** display PVs.  
-**`pvdisplay`** display more information about PVs.
+Command|Description
+-|-
+**`pvcreate`**&nbsp;`/dev/sda3 /dev/sdb2`| mark `/dev/sda3` and `/dev/sdb2` as PVs
+**`pvmove`**&nbsp;`/dev/sda4`| move PEs from `/dev/sda4`
+**`pvremove`**&nbsp;`/dev/sda4`| remove the PV label to `/dev/sda4`
+**`pvs`**| display PVs
+**`pvdisplay`**| display more information about PVs (specify a PV to get more details)
 
 #### **Volume Group (VG)**
 
 Made with PVs. It can hold Logical volumes.
-
-**`vgcreate`**&nbsp;`[name] [physical volumes]`
+Command|Description
+-|-
+**`vgcreate`**&nbsp;`[name] [physical volumes]`| create a new volume group
+&nbsp;|`-s [n]` define PE size, `-s 16M` define each PE to be 16 MiB
+**`vgremove`**&nbsp;`[VG name]`| delete the VG, leaving the PV available for other volume group
+**`vgextend`**&nbsp;`[VG name] [PV]`| extend the size of the VG
+**`vgreduce`**&nbsp;`[VG name] [PV]`| reduce the size of the VG
+**`vgs`**| display VGs
+**`vgdisplay`**| display more information about VGs (specify a VG to get more details)
 
 #### **Logical Volume (LV)**
+
+Logical volumes are created inside of VG.
+Command|Description
+-|-
+**`lvcreate`**&nbsp;&nbsp;`-n [LV-name] -L [size] [VG-name]`|create a new logical volume
+&nbsp;|use `-l` to assign a size in extents
+**`lvremove`**&nbsp;`/dev/[VG]/[LV]`|remove the LV
+**`lvextend`**&nbsp;&nbsp;`-L [size] /dev/[VG]/[LV]`|extend the size of the LV. `+300M` add 300 MiB to the LV
+&nbsp;|`-l` for increase the size in extents
+**`lvreduce`**&nbsp;&nbsp;`-L [size] /dev/[VG]/[LV]`|reduce the LV, `[size]` is the new size for the LV (you can use `-l` for PE)
+**`lvs`**|display LVs
+**`lvdisplay`**|display more information about LVs (specify a LV to get more details)
+
+Once a LV has been created, you can format it with **`mkfs`**. The path will be `/dev/[VG]/[LV]`.
+
+**Before reducing or after extending a LV, use the command `resize2fs`**&nbsp;`/dev/[VG]/[LV] [new size]`  
+The new size is only required for reducing.
+
+## **NFS & SMB**
+
+### **NFS**
+
+We must enable and start the unit `nfs-secure`.  
+Install **`autofs`** for automount the shares.
+
+NFS can be protected using Kerberos. It will requiere a `/etc/krb5.keytab` and additional authentication configuration (Kerberos realm).
+
+Security methods|Description
+-|-
+none|anonymous access to the files, writes to the server (if allowed) will be allocated UID and GID of nfsnobody.
+sys|standard Linux permissions for UID and GID values. Default if another isn't specified
+krb5|client must prove identity using Kerberos and then standard Linux permissions
+krb5i|cryptographically strong guarantee that the data in each request hasn't been tampered
+krb5p|encryption to all requests between the client and the server. Performance impact
+
+#### **Mount an NFS share**
+
+**`mount`**&nbsp;&nbsp;`-t nfs -o sync [server]:/share /mountpoint` in this case, the mountpoint should be already created.  
+We can add the option `sec=` to choose which security method we're using.
+
+`/etc/fstab` entry to automount NFS shares on boot.
+
+```shell
+[server]:/share     /mountpoint     nfs sync    0 0
+```
+
+### **`autofs`**
+
+**Install `autofs` and activate the unit.**
+
+#### **Creating and automount**
+
+Create a new file at `/etc/auto.master.d` like `home.autofs`
+
+```shell
+/shares /etc/auto.demo
+```
+
+The base point is `/shares` and the information to create it's content can be found at `/etc/auto.demo`.  
+Note: Those files at `/etc/` follow a convention of using `auto` and then something else at their names.
+
+`/etc/auto.demo`
+
+```shell
+* -rw,sync [server]:/shares/&
+```
+
+In this case, the ampersand (\&) will match the asterisk at the beginning.  
+The mount point is an asterisk and the subdirectory on the source location is an ampresand.
+
+`/etc/fstab` entry to automount a NFS share that uses Kerberos
+
+```shell
+[server]:/share /mountpoint nfs sec=krb5p,rw 0 0
+```
+
+#### **Mount an SMB share**
+
+**`mount`**&nbsp;&nbsp;`-t cifs -o guest //[server]/share /mountpoint`  
+The `-t cifs` option is the file system type for SMB shares and the `-o guest` tells **`mount`** to try and authenticate as a guest account without a password.
+
+#### **Secure SMB share**
+
+We can also specify certain security parameters (like username, password)
+
+`/credentials` file
+
+```shell
+username=username
+password=password
+domain=domain
+```
+
+It should be stored somewhere secure with only root access (0600).
+
+`/etc/fstab` entry for secured SMB share
+
+```shell
+//[server]/share /mountpoint cifs creds=/[credentials] 0 0
+```
