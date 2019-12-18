@@ -901,8 +901,8 @@ Changes can be made only runtime or permanent (adding the `--permanent` option).
 You can also specify the zone using `--zone` (it's required for some commands).  
 CIDR = IP
 
-Option|Description|&nbsp;|&nbsp;
--|-|-|-
+Option|Description
+-|-
 `--get-default-zone`|query the current default zone
 `--set-default-zone=<ZONE>`|change the default zone (runtime and permanent)
 `--get-zones`|list all zones
