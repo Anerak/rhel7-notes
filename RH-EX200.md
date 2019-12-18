@@ -150,7 +150,7 @@ Option|Description
     ||-min days (-m)-|      |-warn days (-w)-|||-inactive days (-I)-|
 time|-----------------------------------------|---------------------|
     |                                         |                     |
-last change date (-d)             password expiration date      inactive date
+last change date (-d)             password expiration date  inactive date
 ```
 
 **`chage`**&nbsp;&nbsp;`-l [username]` list user's current settings.
@@ -661,6 +661,118 @@ In order to add an NTP server, we have to add a line on `/etc/chrony.conf`
 Restart `chronyd` after making changes.  
 **`chronyc`**&nbsp;`sources -v` list the NTP servers that we're connected to.
 
+## **Scheduling tasks**
+
+### **`at` command**
+
+The **`at`** is a small and powerful command that let us schedule tasks that won't be repeated
+
+**`at`**&nbsp;`<TIMESPEC> [command]`
+
+The `<TIMESPEC>` is quite flexible. You can use many different combinations.
+
+**`echo`**&nbsp;`touch /root/hello |`&nbsp;**`at`**&nbsp;`now +1min` add a job to create the file `hello` in 1 minute from the moment it's executed.
+
+**`at`**&nbsp;`noon +4 days < myscript` add a job to execute the file `myscript` at noon in four days since today.
+
+**`at`**&nbsp;`<TIMESPEC> -q [queue] [command]` you have 26 queues (from a to z) to schedule tasks.
+
+**`at`**&nbsp;&nbsp;`-l` shows the current queue.  
+**`atq`** same as **`at`**&nbsp;&nbsp;`-l`.  
+**`atrm`**&nbsp;`[job]` remove the specified job.
+
+### **`crontab` command**
+
+The benefit of **`crontab`** is that you can schedule recurring tasks.
+
+Option|Description
+-|-
+-e|edit jobs for the current user
+-l|list the jobs for the current user
+-r|remove all jobs for the current user
+-u|manage the jobs of another user (only **root**)
+
+**`crontab`**&nbsp;`<filename>` if you specify a file, all the jobs will be removed and replaced by the jobs of that file. If no filename is specified, `stdin` will be used.
+
+#### **Job Format**
+
+``Minutes Hours Day-of-Month Month Day-of-Week Command``  
+``* * * * * command``
+
+Symbol|Description
+-|-
+`*`|Don't care/always
+`0-9`|number to specify a number of minutes or hours,a date or a week day (0 and 7 = Sunday, 1 = Monday)
+`x-y`|range starting on `x` and ending with `y` both are included
+`x,y`|lists, can include ranges (5,10-13,17)
+`*/x`|indicate an interval of `x`
+Three letter abbreviation|Month (Aug, Oct, Nov, Dec), weekday (Tue, Thu, Mon, Sun)
+
+For the `command` part, we can use `%` to create a new line. It will be considered `stdin` for the `command` we're executing.
+
+`0 9 2 2 * /usr/local/bin/yearly_backup` execute `yearly_backup` every February 2 at 9:00, doesn't matter the week day.
+
+`*/7 9-16 * Jul 5 echo "Chime"` execute **`echo`**&nbsp;`"Chime"` during July but only on Fridays, from 9:00 to 16:59, repeating after 7 minutes.
+
+### **Scheduling system `cron` jobs**
+
+System cron jobs are defined in two locations: `/etc/crontab` and `/etc/cron.d/`.  
+Some packages install **`cron`** jobs and place them on `/etc/cron.d/`
+
+Predefined folders for hourly, daily, weekly and monthly jobs can be found on `/etc`.  
+The directories are `cron.hourly cron.daily cron.weekly cron.monthly`.  
+Any scripts inside those files must have the execute permission activated.
+
+`/etc/anacrontab` keep track of the scripts and the last time they were executed.
+
+### **`systemd-tmpfiles` command**
+
+**`systemd-tmpfiles`** reads configuration files located at `/usr/lib/tmpfiles.d/*.conf`, `/run/tmpfiles.d/*.conf` and `/etc/tmpfiles.d/*.conf`.
+
+**`systemd-tmpfiles`**&nbsp;`[option]`
+
+Option|Description
+-|-
+`--create`|create files and directories specified on the configuration files
+`--clean`|remove all files with an age parameter configured
+
+#### **Configuration files format**  
+
+`Type Path Mode UID GID Age Argument`
+
+Column|Description
+-|-
+Type|action that systemd-tmpfiles should take
+Path|path to file
+Mode|permissions of the file/directory
+UID|owner of the file
+GID|group of the file
+Age|maximum age of the file
+Argument|depends on `Type`, written to the new file or used for a symlink
+
+Action|Description
+-|-
+d|create directory if it doesn't exist yet
+D|create directory if it doesn't exist yet or empty it if already exists
+f|create file if it doesn't exist. `Argument` will be the content of the file
+F|create or truncate a file. `Argument` will be the content of the file
+L|create a symbolic link. `Argument` will be the file to reference
+Z|recursively restore SELinux context and file permissions
+
+`d /run/systemd/seats 0755 root root -` create a directory called `seats` on the `/run/systemd` directory with the permissions `rwxr-xr-x` that belongs to the user and group `root`.  
+This directory won't be automatically purged.
+
+`D /home/student 0700 student student 1d` create a directory for the user and group `student` with `rwx------` permissions, it will be automatically deleted after 1 day.
+
+`L /run/fstablink - root root - /etc/fstab` create a symbolic link to `/etc/fstab`, it won't be automatically purged.
+
+#### **Configuration files priority**
+
+If we have a configuration file that repeats it's name across `/etc/tmpfiles.d`, `/run/tmpfiles.d` and `/usr/lib/tmpfiles.d`, they have certain priority of which file gets to run.
+
+`/etc/tmpfiles.d` \-\> `/run/tmpfiles.d` \-\> `/usr/lib/tmpfiles.d`  
+`/etc/tmpfiles.d` is top priority, then `/run/tmpfiles.d`, and last `/usr/lib/tmpfiles.d`.
+
 ## **Software management**
 
 ### **`yum` command**
@@ -781,6 +893,11 @@ Option|Description|Option|Description
 -n|numbers instead of names|-t|TCP sockets
 -u|UDP sockets|-l|only listening sockets
 -a|all sockets|-p|process using the sockets
+
+### **IP Forwarding**
+
+`net.ipv4.ip_forward = 1` add this line to `/etc/sysctl.conf`  
+After that, you need to apply the changes using `sysctl -p`
 
 ### **NetworkManager**
 
@@ -992,7 +1109,7 @@ v|verbosity output|a|archive mode
 r|sync recursively the whole directory|l|sync symbolic links
 p|preserve permissions|t|preserve timestamps
 g|preserver group ownership|o|preserve files owner's
--D|sync device files (only for troubleshoot)|H|preserve hard links
+D|sync device files (only for troubleshoot)|H|preserve hard links
 A|sync ACLs|X|sync SELinux context
 
 **`rsync`**&nbsp;`[option] [files to synchronize] [/path/to/place/them]`  
