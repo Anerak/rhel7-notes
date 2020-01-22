@@ -2,7 +2,7 @@
 
 Starting on September, I was able to do the courses [RH124][1] and [RH134][2] virtually.
 
-On December 20, I'll attending to the [EX200][3] exam.
+On December 20, I'll be attending to the [EX200][3] exam.
 
 Something I have to do before is clean my notes. You can find the results on the [Markdown file][4]
 
